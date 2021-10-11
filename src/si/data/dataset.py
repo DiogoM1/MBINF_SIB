@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+
 from si.util.util import label_gen
 
 __all__ = ['Dataset']
@@ -40,14 +42,24 @@ class Dataset:
     def from_dataframe(cls, df, ylabel=None):
         """Creates a DataSet from a pandas dataframe.
 
-        :param df: [description]
-        :type df: [type]
+        :param df: Input Dataframe
+        :type df: DataFrame
         :param ylabel: [description], defaults to None
         :type ylabel: [type], optional
         :return: [description]
         :rtype: [type]
         """
-        pass
+        if ylabel is not None and ylabel in df.collumns:
+            X = df.loc[:, df.collumns != ylabel].to_numpy()
+            Y = df.loc[:, ylabel].to_numpy()
+            xname = df.collumns.tolist().remove(ylabel)
+            yname = ylabel
+        else:
+            X = df.to_numpy()
+            Y = None
+            xname = df.collumns.tolist()
+            yname = None
+        return cls(X, Y, xnames=xname, yname=yname)
 
     def __len__(self):
         """Returns the number of data points."""
@@ -55,15 +67,15 @@ class Dataset:
 
     def hasLabel(self):
         """Returns True if the dataset constains labels (a dependent variable)"""
-        pass
+        return bool(self.Y)
 
     def getNumFeatures(self):
         """Returns the number of features"""
-        pass
+        return self.X.shape[1]
 
     def getNumClasses(self):
         """Returns the number of label classes or 0 if the dataset has no dependent variable."""
-        pass
+        return len(np.unique(self.Y)) if self.hasLabel() else 0
 
     def writeDataset(self, filename, sep=","):
         """Saves the dataset to a file
@@ -79,7 +91,10 @@ class Dataset:
 
     def toDataframe(self):
         """ Converts the dataset into a pandas DataFrame"""
-        pass
+        df = pd.DataFrame(self.X, index=self.Y, columns=self._xnames)
+        df.index.name = self._yname
+        return df
+
 
     def getXy(self):
         return self.X, self.Y
