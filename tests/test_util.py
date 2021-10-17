@@ -1,7 +1,7 @@
 import unittest
 
 
-class test_summary(unittest.TestCase):
+class testSummary(unittest.TestCase):
     def setUp(self):
         from si.data import Dataset
         self.filename = "datasets/lr-example1.data"
