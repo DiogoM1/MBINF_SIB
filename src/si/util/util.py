@@ -1,6 +1,8 @@
 import itertools
 
 # Y is reserved to idenfify dependent variables
+import pandas as pd
+
 ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXZ'
 
 __all__ = ['label_gen', 'summary']
@@ -32,4 +34,25 @@ def summary(dataset, format='df'):
     :param format: Output format ('df':DataFrame, 'dict':dictionary ), defaults to 'df'
     :type format: str, optional
     """
-    pass
+    # Validation step to guarantee that the format the user provided is legal per the current documentation
+    if format not in ["df", "dict"]:
+        raise Exception("Ilegal format provided. Please choose between df and dict.")
+
+    # Assign data and calculate the statistics for the flattened array
+    data = dataset.X
+
+    stats = {
+        "mean": data.mean(),
+        "std": data.std(),
+        "max": data.max(),
+        "min": data.min(),
+    }
+
+    # Return the statistics in the user defined format
+    if format == 'dict':
+        return stats
+    else:
+        # because the dict values are not lists, must pass an index
+        # READ MORE:
+        # https://www.statology.org/valueerror-if-using-all-scalar-values-you-must-pass-an-index/
+        return pd.DataFrame(stats, index=[0])
