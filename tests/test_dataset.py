@@ -1,6 +1,8 @@
+import tempfile
 import unittest
 import sys
 import os
+from pathlib import Path
 
 
 try:
@@ -28,3 +30,9 @@ class TestLabeledDataset(TestUnlabeledDataset):
         from si.data import Dataset
         self.filename = "datasets/lr-example1.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
+
+    def test_writeDataset(self):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            tmpdirname = Path(tmpdirname)
+            self.dataset.writeDataset(tmpdirname/"file.txt")
+            self.assertEqual(len(list(tmpdirname.iterdir())), 1)

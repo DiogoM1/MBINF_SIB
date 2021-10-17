@@ -85,7 +85,6 @@ class Dataset:
         :param sep: The fields separator, defaults to ","
         :type sep: str, optional
         """
-
         fullds = np.hstack((self.X, self.Y.reshape(len(self.Y), 1)))
         np.savetxt(filename, fullds, delimiter=sep)
 

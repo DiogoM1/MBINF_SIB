@@ -14,9 +14,9 @@ class StandardScaler:
     feature dominance.
     Attributes
     ----------
-    _mean : numpy array of shape (n_features, )
+    mean : numpy array of shape (n_features, )
         The mean of each feature in the training set.
-    _var : numpy array of shape (n_features, )
+    var : numpy array of shape (n_features, )
         The variance of each feature in the training set.
     """
 
@@ -29,7 +29,7 @@ class StandardScaler:
         dataset : A Dataset object to be standardized
         """
         self.mean = np.mean(dataset.X, axis=0)
-        self.var = np.mean(dataset.X, axis=0)
+        self.var = np.var(dataset.X, axis=0)
 
     def transform(self, dataset, inline=False):
         """
@@ -42,12 +42,12 @@ class StandardScaler:
         -------
         A Dataset object with standardized data.
         """
-        z = (dataset.X - self.mean)*np.sqrt(self.var)
+        z = (dataset.X - self.mean) * np.sqrt(self.var)
         if inline:
             dataset.X = z
             return z
         else:
-            Dataset(z, copy(dataset.y), copy(dataset.xnames), copy(dataset.yname))
+            return Dataset(z, copy(dataset.Y), copy(dataset.xnames), copy(dataset.yname))
 
     def fit_transform(self, dataset, inline=False):
         """
@@ -77,4 +77,9 @@ class StandardScaler:
         -------
         Dataset object
         """
-        pass
+        z = dataset.X / np.sqrt(self.var) + self.mean
+        if inline:
+            dataset.X = z
+            return z
+        else:
+            return Dataset(z, copy(dataset.Y), copy(dataset.xnames), copy(dataset.yname))
