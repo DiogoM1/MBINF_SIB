@@ -15,8 +15,8 @@ class Dataset:
             raise Exception("Trying to instanciate a DataSet without any data")
         self.X = X
         self.Y = Y
-        self._xnames = xnames if xnames else label_gen(X.shape[1])
-        self._yname = yname if yname else 'Y'
+        self.xnames = xnames if xnames else label_gen(X.shape[1])
+        self.yname = yname if yname else 'Y'
 
     @classmethod
     def from_data(cls, filename, sep=",", labeled=True):
@@ -91,10 +91,9 @@ class Dataset:
 
     def toDataframe(self):
         """ Converts the dataset into a pandas DataFrame"""
-        df = pd.DataFrame(self.X, index=self.Y, columns=self._xnames)
-        df.index.name = self._yname
+        df = pd.DataFrame(self.X, index=self.Y, columns=self.xnames)
+        df.index.name = self.yname
         return df
-
 
     def getXy(self):
         return self.X, self.Y
