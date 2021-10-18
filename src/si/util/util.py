@@ -1,6 +1,7 @@
 import itertools
 
 # Y is reserved to idenfify dependent variables
+import numpy as np
 import pandas as pd
 
 ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXZ'
@@ -10,6 +11,7 @@ __all__ = ['label_gen', 'summary']
 
 def label_gen(n):
     """ Generates a list of n distinct labels similar to Excel"""
+
     def _iter_all_strings():
         size = 1
         while True:
@@ -39,20 +41,34 @@ def summary(dataset, format='df'):
         raise Exception("Ilegal format provided. Please choose between df and dict.")
 
     # Assign data and calculate the statistics for the flattened array
-    data = dataset.X
+    if dataset.hasLabel():
+        data = np.hstack(dataset.X, dataset.Y)
+        columns = dataset.xnames[:] + [dataset.yname]
+    else:
+        data = dataset.X
+        columns = dataset.xnames[:]
 
-    stats = {
-        "mean": data.mean(),
-        "std": data.std(),
-        "max": data.max(),
-        "min": data.min(),
-    }
+    _mean = np.mean(data, axis=0)
+    _std = np.std(data, axis=0)
+    _max = np.max(data, axis=0)
+    _min = np.min(data, axis=0)
+
+    stats_dict = {}
+
+    for i in range(data.shape[1]):
+        stats = {
+            "mean": _mean[i],
+            "std": _std[i],
+            "max": _max[i],
+            "min": _min[i],
+        }
+        stats_dict[columns[i]] = stats
 
     # Return the statistics in the user defined format
     if format == 'dict':
-        return stats
+        return stats_dict
     else:
         # because the dict values are not lists, must pass an index
         # READ MORE:
         # https://www.statology.org/valueerror-if-using-all-scalar-values-you-must-pass-an-index/
-        return pd.DataFrame(stats, index=[0])
+        return pd.DataFrame(stats_dict, index=[0])
