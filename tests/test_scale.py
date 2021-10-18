@@ -24,7 +24,7 @@ class TestUnlabeledDataset(unittest.TestCase):
         self.assertFalse(np.array_equal(self.scalar_transform.X, self.dataset.X))
 
     def test_fit_transform(self):
-        self.scalar_transform = self.scalar.scalar_transform(self.dataset)
+        self.scalar_transform = self.scalar.fit_transform(self.dataset)
         self.assertEqual(self.scalar_transform.X.shape, self.dataset.X.shape)
         self.assertFalse(np.array_equal(self.scalar_transform.X, self.dataset.X))
 

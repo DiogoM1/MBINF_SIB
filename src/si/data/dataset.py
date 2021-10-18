@@ -49,15 +49,15 @@ class Dataset:
         :return: [description]
         :rtype: [type]
         """
-        if ylabel is not None and ylabel in df.collumns:
-            X = df.loc[:, df.collumns != ylabel].to_numpy()
+        if ylabel is not None and ylabel in df.columns:
+            X = df.loc[:, df.columns != ylabel].to_numpy()
             Y = df.loc[:, ylabel].to_numpy()
-            xname = df.collumns.tolist().remove(ylabel)
+            xname = df.columns.tolist().remove(ylabel)
             yname = ylabel
         else:
             X = df.to_numpy()
             Y = None
-            xname = df.collumns.tolist()
+            xname = df.columns.tolist()
             yname = None
         return cls(X, Y, xnames=xname, yname=yname)
 
@@ -67,7 +67,7 @@ class Dataset:
 
     def hasLabel(self):
         """Returns True if the dataset constains labels (a dependent variable)"""
-        return bool(self.Y)
+        return True if type(self.Y) != type(None) else False
 
     def getNumFeatures(self):
         """Returns the number of features"""
