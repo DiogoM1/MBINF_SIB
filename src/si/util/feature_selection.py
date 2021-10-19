@@ -102,11 +102,12 @@ def f_classif(dataset):
 
 def f_regression(dataset):
     # READ: http://facweb.cs.depaul.edu/sjost/csc423/documents/f-test-reg.htm
-    from scipy.stats import pearsonr, f
+    from scipy.stats import f
 
     X, y = dataset.getXy()
 
-    corr_coef = np.array([pearsonr(X[:, index], y)[0] for index in range(X.shape[1])])
+    corr_coef = np.corrcoef(X, y, rowvar=False)[:-1,-1:].reshape(X.shape[1])
+    # corr_coef = np.array([pearsonr(X[:, index], y)[0] for index in range(X.shape[1])])
     corr_coef_sq = corr_coef ** 2
 
     # The implementation is centered
