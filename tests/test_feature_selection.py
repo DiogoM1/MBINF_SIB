@@ -27,12 +27,10 @@ class TestVarianceThreshold(unittest.TestCase):
         self.vt.fit(self.dataset)
         self.vt_transform = self.vt.transform(self.dataset)
         self.assertEqual(self.vt_transform.X.shape, self.dataset.X.shape)
-        self.assertFalse(np.array_equal(self.vt_transform.X, self.dataset.X))
 
     def test_fit_transform(self):
-        self.scalar_transform = self.scalar.fit_transform(self.dataset)
-        self.assertEqual(self.scalar_transform.X.shape, self.dataset.X.shape)
-        self.assertFalse(np.array_equal(self.scalar_transform.X, self.dataset.X))
+        self.vt_transform = self.vt.fit_transform(self.dataset)
+        self.assertEqual(self.vt_transform.X.shape, self.dataset.X.shape)
 
 
 class TestFFunctions(unittest.TestCase):
@@ -52,6 +50,7 @@ class TestFFunctions(unittest.TestCase):
         self.assertEqual(p.shape, (13,))
 
     def test_f_regression(self):
+        # TODO: NEED TO TEST WITH ACTUAL REGRESSION DATA
         from si.util.feature_selection import f_regression
         F, p = f_regression(self.dataset)
         self.assertEqual(F.shape, (13,))
