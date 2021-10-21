@@ -42,7 +42,7 @@ def summary(dataset, format='df'):
 
     # Assign data and calculate the statistics for the flattened array
     if dataset.hasLabel():
-        data = np.hstack(dataset.X, dataset.Y)
+        data = np.hstack([dataset.X, np.reshape(dataset.Y, (-1, 1))])
         columns = dataset.xnames[:] + [dataset.yname]
     else:
         data = dataset.X
@@ -71,4 +71,6 @@ def summary(dataset, format='df'):
         # because the dict values are not lists, must pass an index
         # READ MORE:
         # https://www.statology.org/valueerror-if-using-all-scalar-values-you-must-pass-an-index/
-        return pd.DataFrame(stats_dict, index=[0])
+        a = pd.DataFrame.from_dict(stats_dict, orient="index")
+        return pd.DataFrame.from_dict(stats_dict, orient="index")
+

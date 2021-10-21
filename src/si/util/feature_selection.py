@@ -71,8 +71,9 @@ class KBest:
         X, X_names = copy(dataset.X), copy(dataset.xnames)
 
         if self.k > X.shape[1]:
-            raise warnings.warn(
-                "The k value provided is equal or greater than the number of features available. All features will be selected")
+            warnings.warn(
+                "The k value provided is equal or greater than the number of features available. All features will be "
+                "selected")
 
         # Needs to grab both columns and data
         selection_list = np.argsort(self.F)[-10:]

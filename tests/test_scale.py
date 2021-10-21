@@ -1,4 +1,5 @@
 import unittest
+from copy import copy
 
 import numpy as np
 
@@ -23,6 +24,11 @@ class TestUnlabeledDataset(unittest.TestCase):
         self.assertEqual(self.scalar_transform.X.shape, self.dataset.X.shape)
         self.assertFalse(np.array_equal(self.scalar_transform.X, self.dataset.X))
 
+    def test_fit_transform_inline(self):
+        self.scalar_transform = self.scalar.fit_transform(self.dataset)
+        self.scalar.fit_transform(self.dataset, inline=True)
+        self.assertEqual(self.scalar_transform.X.shape, self.dataset.X.shape)
+
     def test_fit_transform(self):
         self.scalar_transform = self.scalar.fit_transform(self.dataset)
         self.assertEqual(self.scalar_transform.X.shape, self.dataset.X.shape)
@@ -31,6 +37,12 @@ class TestUnlabeledDataset(unittest.TestCase):
     def test_inverse_transform(self):
         self.scalar_transform = self.scalar.fit_transform(self.dataset)
         self.assertTrue(np.array_equal(self.scalar.inverse_transform(self.scalar_transform).X, self.dataset.X))
+
+    def test_fit_transform_inline(self):
+        dataset_copy = copy(self.dataset)
+        self.scalar.fit_transform(self.dataset, inline=True)
+        self.scalar.inverse_transform(self.dataset, inline=True)
+        self.assertTrue(np.array_equal(dataset_copy.X, self.dataset.X))
 
 
 if __name__ == '__main__':

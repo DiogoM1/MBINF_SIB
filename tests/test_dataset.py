@@ -20,32 +20,63 @@ class TestUnlabeledDataset(unittest.TestCase):
         from si.data import Dataset
         self.filename = "datasets/lr-example1.data"
         self.dataset = Dataset.from_data(self.filename, labeled=False)
+        self.dataframe = pd.read_csv(self.filename)
+
+    def test_empty_file(self):
+        from si.data import Dataset
+        self.assertRaises(Exception, Dataset.from_data, "datasets/empty.data")
+
+    def test_init(self):
+        from si.data import Dataset
+        self.assertRaises(Exception, Dataset)
 
     def testLen(self):
         self.assertGreater(len(self.dataset), 0)
 
-    def test_from_data(self):
+    def test_from_dataframe(self):
         from si.data import Dataset
-        self.dataframe = pd.read_csv(self.filename)
         dataset = Dataset.from_dataframe(self.dataframe)
-        self.assertGreater(len(dataset), 0)
+        self.assertEqual(len(dataset), 96)
+
+    def test_to_dataframe(self):
+        from si.data import Dataset
+        dataset = Dataset.from_dataframe(self.dataframe).toDataframe()
+        self.assertEqual(len(dataset), 96)
 
     def test_hasLabel(self):
         self.assertFalse(self.dataset.hasLabel())
+
+    def test_getNumFeatures(self):
+        self.assertEqual(self.dataset.getNumFeatures(), 2)
+
+    def test_getNumClasses(self):
+        self.assertEqual(self.dataset.getNumClasses(), 0)
 
 
 class TestLabeledDataset(TestUnlabeledDataset):
 
     def setUp(self):
         from si.data import Dataset
-        self.filename = "datasets/lr-example1.data"
+        self.filename = "datasets/hearts.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
+        self.dataframe = pd.read_csv(self.filename, header=None)
 
     def test_from_data(self):
         from si.data import Dataset
-        self.dataframe = pd.read_csv(self.filename)
-        dataset = Dataset.from_dataframe(self.dataframe)
+        dataset = Dataset.from_dataframe(self.dataframe, ylabel=13)
         self.assertGreater(len(dataset), 0)
+        self.assertTrue(dataset.Y.any())
+
+
+    def test_from_dataframe(self):
+        from si.data import Dataset
+        dataset = Dataset.from_dataframe(self.dataframe)
+        self.assertEqual(len(dataset), 270)
+
+    def test_to_dataframe(self):
+        from si.data import Dataset
+        dataset = Dataset.from_dataframe(self.dataframe).toDataframe()
+        self.assertEqual(len(dataset), 270)
 
     def test_hasLabel(self):
         self.assertTrue(self.dataset.hasLabel())
@@ -53,5 +84,11 @@ class TestLabeledDataset(TestUnlabeledDataset):
     def test_writeDataset(self):
         with tempfile.TemporaryDirectory() as tmpdirname:
             tmpdirname = Path(tmpdirname)
-            self.dataset.writeDataset(tmpdirname/"file.txt")
+            self.dataset.writeDataset(tmpdirname / "file.txt")
             self.assertEqual(len(list(tmpdirname.iterdir())), 1)
+
+    def test_getNumFeatures(self):
+        self.assertEqual(self.dataset.getNumFeatures(), 13)
+
+    def test_getNumClasses(self):
+        self.assertEqual(self.dataset.getNumClasses(), 2)

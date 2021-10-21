@@ -1,7 +1,7 @@
 import unittest
 
 
-class testSummary(unittest.TestCase):
+class TestSummaryUnlabeled(unittest.TestCase):
     def setUp(self):
         from si.data import Dataset
         self.filename = "datasets/lr-example1.data"
@@ -10,7 +10,20 @@ class testSummary(unittest.TestCase):
     def test_summary(self):
         from si.util import summary
         self.assertEqual(len(summary(self.dataset, format="dict")), 2)
-        self.assertEqual(summary(self.dataset, format="df").shape, (1, 2))
+        self.assertEqual(summary(self.dataset, format="df").shape, (2, 4))
+        self.assertRaises(Exception, summary, self.dataset, "dtf2")
+
+
+class TestSummaryLabeled(TestSummaryUnlabeled):
+    def setUp(self):
+        from si.data import Dataset
+        self.filename = "datasets/hearts.data"
+        self.dataset = Dataset.from_data(self.filename, labeled=True)
+
+    def test_summary(self):
+        from si.util import summary
+        self.assertEqual(len(summary(self.dataset, format="dict")), 14)
+        self.assertEqual(summary(self.dataset, format="df").shape, (14, 4))
         self.assertRaises(Exception, summary, self.dataset, "dtf2")
 
 
