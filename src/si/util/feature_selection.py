@@ -76,7 +76,7 @@ class KBest:
                 "selected")
 
         # Needs to grab both columns and data
-        selection_list = np.argsort(self.F)[-10:]
+        selection_list = np.argsort(self.F)[-self.k:]
 
         x = X[:, selection_list]
         x_names = [X_names[index] for index in selection_list]
