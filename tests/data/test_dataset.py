@@ -10,7 +10,7 @@ try:
     import si
 except:
     DIR = os.path.dirname(os.path.realpath(__file__))
-    PATH = os.path.join(DIR, '../src/')
+    PATH = os.path.join(DIR, '../../src/')
     sys.path.insert(0, PATH)
 
 
