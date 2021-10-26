@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def manhatan_distance(X, y):
     from numpy import absolute
     """
@@ -14,3 +17,7 @@ def euclidian_distance(X, y):
     Y: (N,)
     """
     return sqrt(((X-y)**2).sum(axis=1))
+
+
+def hamming_distance(X, y):
+    return np.size(y) - np.equal(X, y).sum(axis=1)
