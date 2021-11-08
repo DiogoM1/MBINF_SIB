@@ -22,7 +22,7 @@ def SVD(X):
     # SVD
     u, sigma, vh = np.linalg.svd(X, full_matrices=False)
     # Return principal components and eigenvalues to calculate the portion of sample variance explained
-    return np.dot(X, vh.T), (sigma ** 2) / (X.shape[0] - 1)
+    return u.dot(np.diag(sigma)), (sigma ** 2) / (X.shape[0] - 1)
 
 
 class PCA:
@@ -59,3 +59,6 @@ class PCA:
             else:
                 percent_dict[i] = value + percent_dict[i - 1]
         return percent_dict
+
+    def inverse_transform(self):
+        pass
