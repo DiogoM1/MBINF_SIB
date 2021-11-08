@@ -50,6 +50,7 @@ def summary(dataset, format='df'):
 
     _mean = np.mean(data, axis=0)
     _std = np.std(data, axis=0)
+    _var = np.var(data, axis=0)
     _max = np.max(data, axis=0)
     _min = np.min(data, axis=0)
 
@@ -59,6 +60,7 @@ def summary(dataset, format='df'):
         stats = {
             "mean": _mean[i],
             "std": _std[i],
+            "var": _var[i],
             "max": _max[i],
             "min": _min[i],
         }

@@ -10,8 +10,8 @@ def random_dist(X, k):
     """
     xmin = X.min(axis=0)
     xmax = X.max(axis=0)
-    centroids = [[np.random.uniform(xmin[i], xmax[i]) for i in range(len(xmax))] for a in
-                 range(k)]
+    centroids = np.array([[np.random.uniform(xmin[i], xmax[i]) for i in range(len(xmax))] for a in
+                          range(k)])
     return centroids
 
 
@@ -20,7 +20,7 @@ def random_points(X, k):
     Init centroids by using a random distribution to generate the coordinates
     """
     rng = np.random.default_rng()
-    centroids = rng.choice(X, k).tolist()
+    centroids = rng.choice(X, k)
     return centroids
 
 
@@ -47,8 +47,8 @@ class KMeans:
             k += 1
             idxs = self.closest_centroid(dataset)
             for i, centroid in enumerate(new_centroids):
-                new_centroids[i] = np.mean(dataset.X[idxs == i], axis=0).tolist()
-            if new_centroids == self.centroids:
+                new_centroids[i] = np.mean(dataset.X[idxs == i], axis=0)
+            if np.all(new_centroids == self.centroids):
                 improving = False
             else:
                 self.centroids = new_centroids

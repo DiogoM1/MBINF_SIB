@@ -23,7 +23,7 @@ class TestKmeans(unittest.TestCase):
 
     def test_fit(self):
         self.kmeans.fit(self.dataset)
-        self.assertEqual(type(self.kmeans.centroids), list)
+        self.assertEqual(type(self.kmeans.centroids), np.ndarray)
         self.assertEqual(len(self.kmeans.centroids), 2)
 
     def test_closest_centroid(self):
