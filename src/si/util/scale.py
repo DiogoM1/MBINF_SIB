@@ -1,6 +1,6 @@
 import numpy as np
 from copy import copy
-from ..data import Dataset
+from si.data import Dataset
 
 
 class StandardScaler:
@@ -30,6 +30,7 @@ class StandardScaler:
         """
         self.mean = np.mean(dataset.X, axis=0)
         self.var = np.var(dataset.X, axis=0)
+        return self.mean, self.var
 
     def transform(self, dataset, inline=False):
         """
@@ -45,9 +46,9 @@ class StandardScaler:
         z = (dataset.X - self.mean) * np.sqrt(self.var)
         if inline:
             dataset.X = z
-            return z
+            return dataset
         else:
-            return Dataset(z, copy(dataset.Y), copy(dataset.xnames), copy(dataset.yname))
+            return Dataset(z, copy(dataset.y), copy(dataset.xnames), copy(dataset.yname))
 
     def fit_transform(self, dataset, inline=False):
         """
@@ -80,6 +81,6 @@ class StandardScaler:
         z = dataset.X / np.sqrt(self.var) + self.mean
         if inline:
             dataset.X = z
-            return z
+            return dataset
         else:
-            return Dataset(z, copy(dataset.Y), copy(dataset.xnames), copy(dataset.yname))
+            return Dataset(z, copy(dataset.y), copy(dataset.xnames), copy(dataset.yname))

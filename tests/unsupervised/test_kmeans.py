@@ -23,17 +23,11 @@ class TestKmeans(unittest.TestCase):
 
     def test_fit(self):
         self.kmeans.fit(self.dataset)
-        self.assertEqual(self.kmeans._xmin.shape[0], self.dataset.getNumFeatures())
-        self.assertEqual(self.kmeans._xmax.shape[0], self.dataset.getNumFeatures())
-
-    def test_init_centroids(self):
-        self.kmeans.fit(self.dataset)
-        centroids = self.kmeans.init_centroids()
-        self.assertEqual(len(centroids), self.kmeans.k)
+        self.assertEqual(type(self.kmeans.centroids), list)
+        self.assertEqual(len(self.kmeans.centroids), 2)
 
     def test_closest_centroid(self):
         self.kmeans.fit(self.dataset)
-        self.kmeans.init_centroids()
         new_centroids = self.kmeans.closest_centroid(self.dataset)
         self.assertEqual(new_centroids.shape, (len(self.dataset),))
         self.assertLessEqual(len(np.unique(new_centroids)), self.kmeans.k)

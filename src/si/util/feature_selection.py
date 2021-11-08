@@ -33,7 +33,7 @@ class VarianceThreshold:
             dataset.xnames = x_names
             return dataset
         else:
-            return Dataset(x, copy(dataset.Y), x_names, copy(dataset.yname))
+            return Dataset(x, copy(dataset.y), x_names, copy(dataset.yname))
 
     def fit_transform(self, dataset, inline=False):
         self.fit(dataset)
@@ -49,7 +49,7 @@ class KBest:
     Implementar F regression e F classification
     """
 
-    def __init__(self, score_func, k):
+    def __init__(self, k, score_func="f_regression"):
         available_funcs = ("f_classif", "f_regression")
         if score_func not in available_funcs:
             raise Exception(f"Score function not available, please choose between: {', '.join(available_funcs)}.")
@@ -86,7 +86,7 @@ class KBest:
             dataset.xnames = x_names
             return dataset
         else:
-            return Dataset(x, copy(dataset.Y), x_names, copy(dataset.yname))
+            return Dataset(x, copy(dataset.y), x_names, copy(dataset.yname))
 
     def fit_transform(self, dataset, inline=False):
         self.fit(dataset)
@@ -107,7 +107,7 @@ def f_regression(dataset):
 
     X, y = dataset.getXy()
 
-    corr_coef = np.corrcoef(X, y, rowvar=False)[:-1,-1:].reshape(X.shape[1])
+    corr_coef = np.corrcoef(X, y, rowvar=False)[:-1, -1:].reshape(X.shape[1])
     # corr_coef = np.array([pearsonr(X[:, index], y)[0] for index in range(X.shape[1])])
     corr_coef_sq = corr_coef ** 2
 

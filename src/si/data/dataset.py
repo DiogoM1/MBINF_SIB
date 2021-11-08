@@ -1,3 +1,5 @@
+from copy import copy
+
 import numpy as np
 import pandas as pd
 
@@ -7,16 +9,16 @@ __all__ = ['Dataset']
 
 
 class Dataset:
-    def __init__(self, X=None, Y=None,
+    def __init__(self, X=None, y=None,
                  xnames: list = None,
                  yname: str = None):
         """ Tabular Dataset"""
         if X is None:
             raise Exception("Trying to instanciate a DataSet without any data")
         self.X = X
-        self.Y = Y
+        self.y = y
         self.xnames = xnames if xnames else label_gen(X.shape[1])
-        self.yname = yname if yname else 'Y'
+        self.yname = yname if yname else 'y'
 
     @classmethod
     def from_data(cls, filename, sep=",", labeled=True):
@@ -32,11 +34,11 @@ class Dataset:
         data = np.genfromtxt(filename, delimiter=sep)
         if labeled:
             X = data[:, 0:-1]
-            Y = data[:, -1]
+            y = data[:, -1]
         else:
             X = data
-            Y = None
-        return cls(X, Y)
+            y = None
+        return cls(X, y)
 
     @classmethod
     def from_dataframe(cls, df, ylabel=None):
@@ -51,15 +53,15 @@ class Dataset:
         """
         if ylabel is not None and ylabel in df.columns:
             X = df.loc[:, df.columns != ylabel].to_numpy()
-            Y = df.loc[:, ylabel].to_numpy()
+            y = df.loc[:, ylabel].to_numpy()
             xname = df.columns.tolist().remove(ylabel)
             yname = ylabel
         else:
             X = df.to_numpy()
-            Y = None
+            y = None
             xname = df.columns.tolist()
             yname = None
-        return cls(X, Y, xnames=xname, yname=yname)
+        return cls(X, y, xnames=xname, yname=yname)
 
     def __len__(self):
         """Returns the number of data points."""
@@ -67,7 +69,7 @@ class Dataset:
 
     def hasLabel(self):
         """Returns True if the dataset constains labels (a dependent variable)"""
-        return True if type(self.Y) != type(None) else False
+        return True if type(self.y) != type(None) else False
 
     def getNumFeatures(self):
         """Returns the number of features"""
@@ -75,7 +77,7 @@ class Dataset:
 
     def getNumClasses(self):
         """Returns the number of label classes or 0 if the dataset has no dependent variable."""
-        return len(np.unique(self.Y)) if self.hasLabel() else 0
+        return len(np.unique(self.y)) if self.hasLabel() else 0
 
     def writeDataset(self, filename, sep=","):
         """Saves the dataset to a file
@@ -85,14 +87,22 @@ class Dataset:
         :param sep: The fields separator, defaults to ","
         :type sep: str, optional
         """
-        fullds = np.hstack((self.X, self.Y.reshape(len(self.Y), 1)))
+        if self.hasLabel():
+            fullds = np.hstack((self.X, self.y.reshape(len(self.y), 1)))
+        else:
+            fullds = self.X
         np.savetxt(filename, fullds, delimiter=sep)
 
     def toDataframe(self):
         """ Converts the dataset into a pandas DataFrame"""
-        df = pd.DataFrame(self.X, index=self.Y, columns=self.xnames)
-        df.index.name = self.yname
+        collumns = copy(self.xnames)
+        if self.hasLabel():
+            fullds = np.hstack((self.X, self.y.reshape(len(self.y), 1)))
+            collumns.append(copy(self.yname))
+        else:
+            fullds = self.X
+        df = pd.DataFrame(fullds, columns=collumns)
         return df
 
     def getXy(self):
-        return self.X, self.Y
+        return self.X, self.y

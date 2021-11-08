@@ -4,30 +4,40 @@ import numpy as np
 from si.util.distance import euclidian_distance
 
 
+def random_dist(X, k):
+    """
+    Init centroids by using a random distribution to generate the coordinates
+    """
+    xmin = X.min(axis=0)
+    xmax = X.max(axis=0)
+    centroids = [[np.random.uniform(xmin[i], xmax[i]) for i in range(len(xmax))] for a in
+                 range(k)]
+    return centroids
+
+
+def random_points(X, k):
+    """
+    Init centroids by using a random distribution to generate the coordinates
+    """
+    rng = np.random.default_rng()
+    centroids = rng.choice(X, k).tolist()
+    return centroids
+
+
 class KMeans:
-    def __init__(self, k, n=1000, distance=None):
+    def __init__(self, k, n=1000, distance=euclidian_distance, init_centroids=random_points):
         self.k = k
         self.n = n
         self.centroids = None
-        if distance:
-            self.distance = distance
-        else:
-            self.distance = euclidian_distance
+        self._init_centroids = init_centroids
+        self.distance = distance
 
     def fit(self, dataset):
-        X = dataset.X
-        self._xmin = X.min(axis=0)
-        self._xmax = X.max(axis=0)
-        return self._xmin, self._xmax
-
-    def init_centroids(self):
-        self.centroids = [[np.random.uniform(self._xmin[i], self._xmax[i]) for i in range(len(self._xmax))] for a in
-                          range(self.k)]
+        self.centroids = self._init_centroids(dataset.X, self.k)
         return self.centroids
 
-    def transform(self, dataset, inline=False):
-        self.centroids = self.init_centroids()
-        new_centroids = copy(self.init_centroids())
+    def transform(self, dataset):
+        new_centroids = copy(self.centroids)
         # use the indxs for each cluster to make their mean from inside that same cluster
         improving = True
         k = 0
@@ -46,9 +56,9 @@ class KMeans:
         self.idxs = idxs
         return self.centroids, self.idxs
 
-    def fit_transform(self, dataset, inline=False):
+    def fit_transform(self, dataset):
         self.fit(dataset)
-        return self.transform(dataset, inline)
+        return self.transform(dataset)
 
     def closest_centroid(self, dataset):
         distances = [self.distance(dataset.X, centroid) for i, centroid in enumerate(self.centroids)]

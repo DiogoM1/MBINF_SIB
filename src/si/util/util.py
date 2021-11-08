@@ -1,6 +1,6 @@
 import itertools
 
-# Y is reserved to idenfify dependent variables
+# y is reserved to idenfify dependent variables
 import numpy as np
 import pandas as pd
 
@@ -42,7 +42,7 @@ def summary(dataset, format='df'):
 
     # Assign data and calculate the statistics for the flattened array
     if dataset.hasLabel():
-        data = np.hstack([dataset.X, np.reshape(dataset.Y, (-1, 1))])
+        data = np.hstack([dataset.X, np.reshape(dataset.y, (-1, 1))])
         columns = dataset.xnames[:] + [dataset.yname]
     else:
         data = dataset.X

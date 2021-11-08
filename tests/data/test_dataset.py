@@ -40,8 +40,9 @@ class TestUnlabeledDataset(unittest.TestCase):
 
     def test_to_dataframe(self):
         from si.data import Dataset
-        dataset = Dataset.from_dataframe(self.dataframe).toDataframe()
-        self.assertEqual(len(dataset), 96)
+        dataset = Dataset.from_dataframe(self.dataframe)
+        df = dataset.toDataframe()
+        self.assertEqual(len(df), 96)
 
     def test_hasLabel(self):
         self.assertFalse(self.dataset.hasLabel())
@@ -65,8 +66,7 @@ class TestLabeledDataset(TestUnlabeledDataset):
         from si.data import Dataset
         dataset = Dataset.from_dataframe(self.dataframe, ylabel=13)
         self.assertGreater(len(dataset), 0)
-        self.assertTrue(dataset.Y.any())
-
+        self.assertTrue(dataset.y.any())
 
     def test_from_dataframe(self):
         from si.data import Dataset
@@ -76,7 +76,7 @@ class TestLabeledDataset(TestUnlabeledDataset):
     def test_to_dataframe(self):
         from si.data import Dataset
         dataset = Dataset.from_dataframe(self.dataframe).toDataframe()
-        self.assertEqual(len(dataset), 270)
+        self.assertEqual(len(dataset)+1, 271)
 
     def test_hasLabel(self):
         self.assertTrue(self.dataset.hasLabel())

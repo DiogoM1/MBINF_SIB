@@ -87,11 +87,11 @@ class TestKBestClassif(unittest.TestCase):
         from si.util.feature_selection import f_classif
         self.filename = "datasets/hearts.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
-        self.KBest = KBest("f_classif", 10)
+        self.KBest = KBest(10, "f_classif", )
         self.assertEqual(self.KBest.k, 10)
         self.assertEqual(self.KBest._func, f_classif)
-        self.assertRaises(Exception, KBest, "t_classif", 10)
-        self.assertRaises(Exception, KBest, "f_classif", -12)
+        self.assertRaises(Exception, KBest, 10, "t_classif")
+        self.assertRaises(Exception, KBest, -12, "f_classif")
 
     def test_fit(self):
         self.KBest.fit(self.dataset)
@@ -104,7 +104,7 @@ class TestKBestClassif(unittest.TestCase):
         self.KBest_transform = self.KBest.transform(self.dataset)
         self.assertEqual(self.KBest_transform.X.shape, (self.dataset.X.shape[0], self.KBest.k))
 
-        kb = KBest("f_classif", 23)
+        kb = KBest(23, "f_classif")
         kb.fit(self.dataset)
         self.assertWarns(Warning, kb.transform, self.dataset)
 
@@ -126,7 +126,7 @@ class TestKBestRegression(TestKBestClassif):
         from si.util.feature_selection import f_regression
         self.filename = "datasets/hearts.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
-        self.KBest = KBest("f_regression", 10)
+        self.KBest = KBest(10, "f_regression")
         self.assertEqual(self.KBest.k, 10)
         self.assertEqual(self.KBest._func, f_regression)
 
@@ -139,7 +139,6 @@ class TestKBestRegression(TestKBestClassif):
         self.KBest.fit(self.dataset)
         self.KBest_transform = self.KBest.transform(self.dataset)
         self.assertEqual(self.KBest_transform.X.shape, (self.dataset.X.shape[0], self.KBest.k))
-
 
     def test_fit_transform(self):
         self.KBest_transform = self.KBest.fit_transform(self.dataset)
