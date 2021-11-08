@@ -6,22 +6,22 @@ from si.data import Dataset
 from si.util.scale import StandardScaler
 
 def EVD(X):
-    C = np.dot(X.T, X) / (X.shape[0] - 1)
+    C = np.cov(X.T)
     # EVD
-    e_vals, e_vecs = np.linalg.eig(C)
-    idx = e_vals.argsort()[::-1]
-    e_vals = e_vals[idx]
-    e_vecs = e_vecs[:, idx]
+    eigen_values, eigen_vectors = np.linalg.eig(C)
+    idx = eigen_vectors.argsort()[::-1]
+    eigen_values = eigen_values[idx]
+    eigen_vectors = eigen_vectors[:, idx]
 
     # Return principal components and eigenvalues to calculate the portion of sample variance explained
-    return np.dot(X, e_vecs), e_vals
+    return np.dot(X, eigen_vectors), eigen_values
 
 
 def SVD(X):
     # SVD
-    u, sigma, vt = np.linalg.svd(X, full_matrices=False)
+    u, sigma, vh = np.linalg.svd(X, full_matrices=False)
     # Return principal components and eigenvalues to calculate the portion of sample variance explained
-    return np.dot(X, vt.T), (sigma ** 2) / (X.shape[0] - 1)
+    return np.dot(X, vh.T), (sigma ** 2) / (X.shape[0] - 1)
 
 class PCA:
     # Must use scalar / centralize points
