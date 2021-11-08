@@ -43,7 +43,7 @@ class KMeans:
         k = 0
         idxs = None
 
-        while improving and k < 1000:
+        while improving and k < self.n:
             k += 1
             idxs = self.closest_centroid(dataset)
             for i, centroid in enumerate(new_centroids):

@@ -5,6 +5,7 @@ import numpy as np
 from si.data import Dataset
 from si.util.scale import StandardScaler
 
+
 def EVD(X):
     C = np.cov(X.T)
     # EVD
@@ -22,6 +23,7 @@ def SVD(X):
     u, sigma, vh = np.linalg.svd(X, full_matrices=False)
     # Return principal components and eigenvalues to calculate the portion of sample variance explained
     return np.dot(X, vh.T), (sigma ** 2) / (X.shape[0] - 1)
+
 
 class PCA:
     # Must use scalar / centralize points
