@@ -35,8 +35,8 @@ class TestKNN(unittest.TestCase):
     def test_cost(self):
         self.knn.fit(self.dataset)
         self.knn_dataset = self.knn.cost()
-        self.assertLessEqual(self.knn_dataset, 100)
-        self.assertGreaterEqual(self.knn_dataset, 0)
+        self.assertLessEqual(self.knn_dataset, 1)
+        self.assertGreaterEqual(self.knn_dataset, 0.60)
 
 # TODO: Implementar Naive Bayes
 # TODO: Implementar uma função de holdout

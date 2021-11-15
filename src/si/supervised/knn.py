@@ -23,7 +23,8 @@ class KNN(SupervisedModel):
 #        dist = np.ma.apply_along_axis(self._distance_func, axis=0, arr=self.data.X, y=x)
 #        dist = self._distance_func(self.data.X, x)
         distances = self._distance_func(self.data.X, x)
-        return np.argsort(distances)[-self.k:]
+        a = np.argsort(distances)[:self.k]
+        return a
 
     def predict(self, x):
         if not self.is_fitted:
