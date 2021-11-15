@@ -1,0 +1,10 @@
+https://towardsdatascience.com/pca-and-svd-explained-with-numpy-5d13b0d2a4d8
+https://www.cs.utah.edu/~jeffp/teaching/cs5955/L15-SVD.pdf
+https://kunyu-he.com/2020/02/23/SVD-in-Machine-Learning-PCA/
+https://towardsdatascience.com/pca-with-numpy-58917c1d0391
+https://stats.stackexchange.com/questions/34396/im-getting-jumpy-loadings-in-rollapply-pca-in-r-can-i-fix-it
+https://iq.opengenus.org/algorithm-principal-component-analysis-pca/
+https://towardsdatascience.com/svd-8c2f72e264f
+https://stackoverflow.com/questions/47542927/python-code-svd-with-numpy
+https://web.mit.edu/be.400/www/SVD/Singular_Value_Decomposition.htm
+https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
