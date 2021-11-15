@@ -1,16 +1,14 @@
-from copy import copy
-
 import numpy as np
 
-from si.data import Dataset
-from si.util.scale import StandardScaler
+from si.unsupervised.unsupervised_model import UnsupervisedModel
+from si.data.scale import StandardScaler
 
 
-def EVD(X):
+def evd(X):
     C = np.cov(X.T)
     # EVD
     eigen_values, eigen_vectors = np.linalg.eig(C)
-    idx = eigen_vectors.argsort()[::-1]
+    idx = eigen_values.argsort()[::-1]
     eigen_values = eigen_values[idx]
     eigen_vectors = eigen_vectors[:, idx]
 
@@ -18,25 +16,29 @@ def EVD(X):
     return np.dot(X, eigen_vectors), eigen_values
 
 
-def SVD(X):
+def svd(X):
     # SVD
     u, sigma, vh = np.linalg.svd(X, full_matrices=False)
     # Return principal components and eigenvalues to calculate the portion of sample variance explained
     return u.dot(np.diag(sigma)), (sigma ** 2) / (X.shape[0] - 1)
 
 
-class PCA:
+class PCA(UnsupervisedModel):
     # Must use scalar / centralize points
-    def __init__(self, k, function=SVD):
+    def __init__(self, k, function=svd):
+        super().__init__()
         self.k = k
         self._func = function
 
     def fit(self, dataset):
         self.scaler = StandardScaler()
         self.scaler.fit(dataset)
+        self.is_fitted = True
         return self.scaler
 
     def transform(self, dataset):
+        if not self.is_fitted:
+            raise Exception("The model hasn't been fitted yet.")
         centered = self.scaler.transform(dataset)
         pc, self.eigen = self._func(centered.X)
         self.variance_explained()

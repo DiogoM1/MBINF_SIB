@@ -1,7 +1,7 @@
 from si.data import Dataset
 from si.util import summary
-from si.util.feature_selection import VarianceThreshold
-from si.util.scale import StandardScaler
+from si.data.feature_selection import VarianceThreshold
+from si.data.scale import StandardScaler
 import os
 
 DIR = os.path.dirname(os.path.realpath(__file__))

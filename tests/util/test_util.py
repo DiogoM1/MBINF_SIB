@@ -1,6 +1,16 @@
 import unittest
 
 
+class TestLabelGen(unittest.TestCase):
+    def setUp(self):
+        from si.data import Dataset
+        self.filename = "datasets/cpu.data"
+        self.dataset = Dataset.from_data(self.filename, labeled=False)
+
+    def test_gen(self):
+        self.assertEqual(len(self.dataset.xnames), self.dataset.X.shape[1])
+
+
 class TestSummaryUnlabeled(unittest.TestCase):
     def setUp(self):
         from si.data import Dataset

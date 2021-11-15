@@ -44,6 +44,12 @@ class TestUnlabeledDataset(unittest.TestCase):
         df = dataset.toDataframe()
         self.assertEqual(len(df), 96)
 
+    def test_writeDataset(self):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            tmpdirname = Path(tmpdirname)
+            self.dataset.writeDataset(tmpdirname / "file.txt")
+            self.assertEqual(len(list(tmpdirname.iterdir())), 1)
+
     def test_hasLabel(self):
         self.assertFalse(self.dataset.hasLabel())
 
@@ -64,18 +70,18 @@ class TestLabeledDataset(TestUnlabeledDataset):
 
     def test_from_data(self):
         from si.data import Dataset
-        dataset = Dataset.from_dataframe(self.dataframe, ylabel=13)
-        self.assertGreater(len(dataset), 0)
-        self.assertTrue(dataset.y.any())
+        self.assertGreater(len(self.dataset), 0)
+        self.assertTrue(self.dataset.y.any())
 
     def test_from_dataframe(self):
         from si.data import Dataset
-        dataset = Dataset.from_dataframe(self.dataframe)
+        dataset = Dataset.from_dataframe(self.dataframe, ylabel=13)
         self.assertEqual(len(dataset), 270)
+        self.assertTrue(dataset.y.any())
 
     def test_to_dataframe(self):
         from si.data import Dataset
-        dataset = Dataset.from_dataframe(self.dataframe).toDataframe()
+        dataset = self.dataset.toDataframe()
         self.assertEqual(len(dataset)+1, 271)
 
     def test_hasLabel(self):

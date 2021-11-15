@@ -2,6 +2,7 @@ from copy import copy
 
 import numpy as np
 from si.util.distance import euclidian_distance
+from si.unsupervised.unsupervised_model import UnsupervisedModel
 
 
 def random_dist(X, k):
@@ -24,19 +25,27 @@ def random_points(X, k):
     return centroids
 
 
-class KMeans:
+class KMeans(UnsupervisedModel):
+    """
+    Init centroids by using a random distribution to generate the coordinates
+    """
     def __init__(self, k, n=1000, distance=euclidian_distance, init_centroids=random_points):
+        super().__init__()
         self.k = k
         self.n = n
         self.centroids = None
+        self.idxs = None
         self._init_centroids = init_centroids
         self.distance = distance
 
     def fit(self, dataset):
         self.centroids = self._init_centroids(dataset.X, self.k)
+        self.is_fitted = True
         return self.centroids
 
     def transform(self, dataset):
+        if not self.is_fitted:
+            raise Exception("The model hasn't been fitted yet.")
         new_centroids = copy(self.centroids)
         # use the indxs for each cluster to make their mean from inside that same cluster
         improving = True

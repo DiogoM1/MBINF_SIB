@@ -32,6 +32,9 @@ class TestKmeans(unittest.TestCase):
         self.assertEqual(new_centroids.shape, (len(self.dataset),))
         self.assertLessEqual(len(np.unique(new_centroids)), self.kmeans.k)
 
+    def test_failed_transform(self):
+        self.assertRaises(Exception, self.kmeans.transform, self.dataset)
+
     def test_transform(self):
         self.kmeans.fit(self.dataset)
         self.kmeans_centroids, self.kmeans_clusters = self.kmeans.transform(self.dataset)

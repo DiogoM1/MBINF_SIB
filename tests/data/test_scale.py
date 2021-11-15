@@ -8,7 +8,7 @@ class TestUnlabeledDataset(unittest.TestCase):
 
     def setUp(self):
         from si.data import Dataset
-        from si.util import scale
+        from si.data import scale
         self.filename = "datasets/lr-example1.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
         self.scalar = scale.StandardScaler()

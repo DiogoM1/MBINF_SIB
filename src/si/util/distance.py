@@ -20,4 +20,8 @@ def euclidian_distance(X, y):
 
 
 def hamming_distance(X, y):
+    """
+    X: (N,N)
+    Y: (N,)
+    """
     return np.size(y) - np.equal(X, y).sum(axis=1)

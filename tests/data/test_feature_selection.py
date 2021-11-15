@@ -1,7 +1,6 @@
 import unittest
 
 # noinspection DuplicatedCode
-import warnings
 
 
 class TestVarianceThreshold(unittest.TestCase):
@@ -13,7 +12,7 @@ class TestVarianceThreshold(unittest.TestCase):
 
     def setUp(self):
         from si.data import Dataset
-        from si.util import feature_selection as fs
+        from si.data import feature_selection as fs
         self.filename = "datasets/lr-example1.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
         # set the threshold
@@ -55,7 +54,7 @@ class TestFClassif(unittest.TestCase):
         self.dataset = Dataset.from_data(self.filename, labeled=True)
 
     def test_f_classif(self):
-        from si.util.feature_selection import f_classif
+        from si.data.feature_selection import f_classif
         F, p = f_classif(self.dataset)
         self.assertEqual(F.shape, (13,))
         self.assertEqual(p.shape, (13,))
@@ -71,7 +70,7 @@ class TestFRegression(unittest.TestCase):
         self.dataset = Dataset.from_data(self.filename, labeled=True)
 
     def test_f_regression(self):
-        from si.util.feature_selection import f_regression
+        from si.data.feature_selection import f_regression
         F, p = f_regression(self.dataset)
         self.assertEqual(F.shape, (13,))
         self.assertEqual(p.shape, (13,))
@@ -83,8 +82,8 @@ class TestKBestClassif(unittest.TestCase):
 
     def setUp(self):
         from si.data import Dataset
-        from si.util.feature_selection import KBest
-        from si.util.feature_selection import f_classif
+        from si.data.feature_selection import KBest
+        from si.data.feature_selection import f_classif
         self.filename = "datasets/hearts.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
         self.KBest = KBest(10, "f_classif", )
@@ -99,7 +98,7 @@ class TestKBestClassif(unittest.TestCase):
         self.assertEqual(len(self.KBest.p), 13)
 
     def test_transform(self):
-        from si.util.feature_selection import KBest
+        from si.data.feature_selection import KBest
         self.KBest.fit(self.dataset)
         self.KBest_transform = self.KBest.transform(self.dataset)
         self.assertEqual(self.KBest_transform.X.shape, (self.dataset.X.shape[0], self.KBest.k))
@@ -122,8 +121,8 @@ class TestKBestRegression(TestKBestClassif):
 
     def setUp(self):
         from si.data import Dataset
-        from si.util.feature_selection import KBest
-        from si.util.feature_selection import f_regression
+        from si.data.feature_selection import KBest
+        from si.data.feature_selection import f_regression
         self.filename = "datasets/hearts.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
         self.KBest = KBest(10, "f_regression")
