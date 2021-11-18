@@ -7,7 +7,7 @@ def manhatan_distance(X, y):
     X: (N,N)
     Y: (N,)
     """
-    return absolute(X-y).sum(axis=1)
+    return absolute(X - y).sum(axis=1)
 
 
 def euclidian_distance(X, y):
@@ -16,7 +16,7 @@ def euclidian_distance(X, y):
     X: (N,N)
     Y: (N,)
     """
-    return sqrt(((X-y)**2).sum(axis=1))
+    return sqrt(((X - y) ** 2).sum(axis=1))
 
 
 def hamming_distance(X, y):
@@ -25,3 +25,7 @@ def hamming_distance(X, y):
     Y: (N,)
     """
     return np.size(y) - np.equal(X, y).sum(axis=1)
+
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
