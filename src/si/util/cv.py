@@ -7,10 +7,11 @@ from si.util.train import trainning_test_data_split
 
 class CrossValidationScore:
 
-    def __init__(self, model, dataset, **kwargs):
+    def __init__(self, model, dataset, score=None, **kwargs):
         self.model = model
         self.dataset = dataset
         self.cv = kwargs.get("cv", 3)
+        self.score = score
         self.split = kwargs.get("split", 0.8)
         self.train_scores = None
         self.test_scores = None
@@ -24,8 +25,14 @@ class CrossValidationScore:
             train, test = trainning_test_data_split(self.dataset, self.split)
             ds.append((train, test))
             self.model.fit(train)
-            train_scores.append(self.model.cost())
-            test_scores.append(self.model.cost(test.X, test.y))
+            if self.score:
+                train_scores.append(self.model.cost())
+                test_scores.append(self.model.cost(test.X, test.y))
+            else:
+                y_train = np.ma.apply_along_axis(self.model.predict(), axis=0, arr=train.X.T)
+                train_scores.append(self.score(train.y, y_train))
+                y_test = np.ma.apply_along_axis(self.model.predict(), axis=0, arr=test.X.T)
+                train_scores.append(self.score(test.y, y_test))
         self.train_scores = train_scores
         self.test_scores = test_scores
         self.ds = ds
