@@ -40,7 +40,13 @@ class Dense(Layer):
         return self.output
 
     def backward(self, output_error, learning_rate):
-        pass
+        input_error = np.dot(output_error, self.weights.T)
+        weight_error = np.dot(self.input.T, output_error)
+        bias_error = np.sum(output_error, axis=0)
+        # gradient descent is used to update the values
+        self.weights -= learning_rate*weight_error
+        self.bias -= learning_rate*bias_error
+        return
 
 
 class Activation(Layer):
@@ -53,8 +59,9 @@ class Activation(Layer):
         self.output = self.activation(self.input)
         return self.output
 
-    def backward(self, input):
-        return self.activation(input)
+    def backward(self, output_error, learning_rate):
+        # learning rate is not used as there is no parameters to learn
+        return np.multiply(self.activation.prime(self.input), output_error)
 
 
 class NN(SupervisedModel):
@@ -73,7 +80,31 @@ class NN(SupervisedModel):
         self.layers.append(layer)
 
     def fit(self, dataset):
-        raise NotImplementedError
+        err = 0
+        X, y = dataset.getXy()
+        self.dataset = dataset
+        self.history = {}
+        for epoch in range(self.epochs):
+            output = X
+
+            # Forward Propagation
+            for layer in self.layers:
+                output = layer.foward(output)
+
+            # backward propagation
+            error = self.loss.prime(y, output)
+            for layer in reversed(self.layers):
+                error = layer.backward(error, self.lr)
+
+            # calculate average error on all samples
+            err = self.loss(y, output)
+            self.history[epoch] = err
+            if self.verbose:
+                print(f"epoch {epoch+1}/{self.epochs} error = {err}")
+
+        if not self.verbose:
+            print(f"error={err}")
+        self.is_fitted = True
 
     def predict(self, input_data):
         assert self.is_fitted, "Model must be ftted before it can be predicted"
