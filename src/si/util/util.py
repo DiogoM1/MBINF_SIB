@@ -76,3 +76,6 @@ def summary(dataset, format='df'):
         a = pd.DataFrame.from_dict(stats_dict, orient="index")
         return pd.DataFrame.from_dict(stats_dict, orient="index")
 
+# Ver qual foi a correção de custo aplicada.
+def add_intersect(X):
+    return np.hstack((np.ones((X.shape[0],1)), X))
