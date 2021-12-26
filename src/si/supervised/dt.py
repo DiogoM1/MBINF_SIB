@@ -1,5 +1,5 @@
-from .supervised_model import SupervisedModel
-from ..util import accuracy_score
+from si.supervised.supervised_model import SupervisedModel
+from si.util.metrics import accuracy
 import numpy as np
 
 
@@ -20,7 +20,7 @@ class Node:
         self.is_terminal = False
 
 
-class DecisionTree(Model):
+class DecisionTree(SupervisedModel):
 
     def __init__(self, max_depth=3, min_samples_leaf=1, min_samples_split=2):
         super().__init__()
@@ -181,4 +181,4 @@ class DecisionTree(Model):
 
         y_pred = np.ma.apply_along_axis(self.predict,
                                         axis=0, arr=X.T)
-        return accuracy_score(y, y_pred)
+        return accuracy(y, y_pred)
