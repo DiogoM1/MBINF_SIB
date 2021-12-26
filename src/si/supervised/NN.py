@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from si.supervised.supervised_model import SupervisedModel
-from si.util.metrics import accuracy
+from si.util.metrics import accuracy, mse, mse_prime
 
 
 class Layer(ABC):
@@ -21,7 +21,7 @@ class Layer(ABC):
 
 
 class Dense(Layer):
-    def __int__(self, input_size, output_size):
+    def __init__(self, input_size, output_size):
         super().__init__()
         self.weights = np.random.rand(input_size, output_size) -0.5
         self.bias = np.random.rand(1, output_size) # pode ser random ou nulos
@@ -46,13 +46,14 @@ class Dense(Layer):
         # gradient descent is used to update the values
         self.weights -= learning_rate*weight_error
         self.bias -= learning_rate*bias_error
-        return
+        return input_error
 
 
 class Activation(Layer):
-    def __init__(self, activation):
+    def __init__(self, activation, activation_prime=None):
         super().__init__()
         self.activation = activation
+        self.activation_prime = activation_prime
 
     def foward(self, input_data):
         self.input = input_data
@@ -61,19 +62,23 @@ class Activation(Layer):
 
     def backward(self, output_error, learning_rate):
         # learning rate is not used as there is no parameters to learn
-        return np.multiply(self.activation.prime(self.input), output_error)
+        return np.multiply(self.activation(self.input), output_error)
 
 
 class NN(SupervisedModel):
-    def __init__(self, loss=None, epoch=1000, lr=0.1, verbose=False):
+    def __init__(self, loss=None, loss_prime=None, epochs=1000, lr=0.1, verbose=False):
         super().__init__()
         if not loss:
-            self.loss = accuracy
+            self.loss = mse
         else:
             self.loss = loss
+        if not loss_prime:
+            self.loss_prime = mse_prime
+        else:
+            self.loss_prime = loss_prime
         self.layers = []
         self.lr = lr
-        self.epochs = epoch
+        self.epochs = epochs
         self.verbose = verbose
 
     def add(self, layer):
@@ -92,7 +97,7 @@ class NN(SupervisedModel):
                 output = layer.foward(output)
 
             # backward propagation
-            error = self.loss.prime(y, output)
+            error = self.loss_prime(y, output)
             for layer in reversed(self.layers):
                 error = layer.backward(error, self.lr)
 
@@ -113,12 +118,19 @@ class NN(SupervisedModel):
             output = layer.foward(output)
         return output
 
-    def cost(self, X=None, Y=None):
+    def classify(self, input_data):
+        return self.predict(input_data)
+
+    def cost(self, X=None, y=None):
         if not self.is_fitted:
             raise Exception("The model hasn't been fitted yet.")
-        y_pred = np.ma.apply_along_axis(self.predict, axis=0, arr=self.data.X.T)
-        return self.loss(self.data.y, y_pred)
+
+        X = X if X is not None else self.dataset.X
+        y = y if y is not None else self.dataset.y
+
+        y_pred = self.predict(X)
+        return self.loss(y, y_pred)
 
 # TODO: Get the Activation Functions
 # TODO: Adicionar o Call
-# TODO: Nas metricas adicionar a derivada da mse e cross entropy, cross entropy prime
+# TODO: Nas metricas adicionar a derivada da mse e cross entropy prime
