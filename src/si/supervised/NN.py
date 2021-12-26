@@ -133,4 +133,3 @@ class NN(SupervisedModel):
 
 # TODO: Get the Activation Functions
 # TODO: Adicionar o Call
-# TODO: Nas metricas adicionar a derivada da mse e cross entropy prime
