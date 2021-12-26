@@ -28,6 +28,8 @@ class Dataset:
         :type filename: str
         :param sep: attributes separator, defaults to ","
         :type sep: str, optional
+        :param labeled: Data has labels
+        :type labeled: bool
         :return: A DataSet object
         :rtype: DataSet
         """
@@ -69,7 +71,7 @@ class Dataset:
 
     def hasLabel(self):
         """Returns True if the dataset constains labels (a dependent variable)"""
-        return True if type(self.y) != type(None) else False
+        return True if isinstance(self.y, type(None)) else False
 
     def getNumFeatures(self):
         """Returns the number of features"""

@@ -17,7 +17,7 @@ class TestNaiveBayes(unittest.TestCase):
     def setUp(self):
         from si.data import Dataset
         from si.supervised import NaiveBayes
-        from si.util.train import trainning_test_data_split, categorical_to_numeric
+        from si.util.train import training_test_data_split, categorical_to_numeric
         self.filename = "datasets/breast-bin.data"
         data = pd.read_csv(self.filename)
         self.dataset = Dataset.from_data(self.filename, labeled=True)

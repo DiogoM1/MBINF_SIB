@@ -1,8 +1,7 @@
 import numpy as np
 
 from si.supervised.supervised_model import SupervisedModel
-from si.util.distance import euclidian_distance
-from si.util.metrics import accuracy, mse
+from si.util.metrics import mse
 
 
 class LinearRegression(SupervisedModel):
@@ -13,6 +12,8 @@ class LinearRegression(SupervisedModel):
         self.theta = None
         self.epochs = epochs
         self.lr = lr
+        self.history = None
+        self.X, self.y = None, None
 
     def fit(self, dataset):
         if not dataset.hasLabel():
@@ -43,11 +44,14 @@ class LinearRegression(SupervisedModel):
         _x = np.hstack(([1], x))
         return np.dot(self.theta, _x)
 
-    def cost(self):
+    def cost(self, X=None, y=None):
         if not self.is_fitted:
             raise Exception("The model hasn't been fitted yet.")
-        y_pred = self.X.dot(self.theta)
-        return mse(self.y, y_pred) / 2
+        X = X if X is not None else self.X
+        y = y if y is not None else self.y
+
+        y_pred = X.dot(self.theta)
+        return mse(y, y_pred) / 2
 
 
 class LinearRegressionReg(LinearRegression):

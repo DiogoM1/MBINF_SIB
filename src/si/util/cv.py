@@ -1,8 +1,6 @@
-import itertools
-
 import numpy as np
 
-from si.util.train import trainning_test_data_split
+from si.util.train import training_test_data_split
 
 
 class CrossValidationScore:
@@ -22,7 +20,7 @@ class CrossValidationScore:
         test_scores = []
         ds = []
         for _ in range(self.cv):
-            train, test = trainning_test_data_split(self.dataset, self.split)
+            train, test = training_test_data_split(self.dataset, self.split)
             ds.append((train, test))
             self.model.fit(train)
             if self.score:
@@ -39,7 +37,6 @@ class CrossValidationScore:
         return train_scores, test_scores
 
     def toDataframe(self):
-        import pandas as pd
         assert self.train_scores and self.test_scores, "Need to run trainning before hand"
         np.array((self.train_scores, self.test_scores))
 

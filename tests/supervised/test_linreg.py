@@ -15,10 +15,10 @@ class TestLinearRegression(unittest.TestCase):
     def setUp(self):
         from si.data import Dataset
         from si.supervised import LinearRegression
-        from si.util.train import trainning_test_data_split, categorical_to_numeric
+        from si.util.train import training_test_data_split, categorical_to_numeric
         self.filename = "datasets/lr-example2.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
-        self.train_data, self.test_data = trainning_test_data_split(self.dataset)
+        self.train_data, self.test_data = training_test_data_split(self.dataset)
         # set the threshold
         self.lr = LinearRegression()
 
@@ -46,10 +46,10 @@ class TestLinearRegressionReg(unittest.TestCase):
     def setUp(self):
         from si.data import Dataset
         from si.supervised import LinearRegressionReg
-        from si.util.train import trainning_test_data_split
+        from si.util.train import training_test_data_split
         self.filename = "datasets/lr-example2.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
-        self.train_data, self.test_data = trainning_test_data_split(self.dataset)
+        self.train_data, self.test_data = training_test_data_split(self.dataset)
         # set the threshold
         self.lr = LinearRegressionReg()
 

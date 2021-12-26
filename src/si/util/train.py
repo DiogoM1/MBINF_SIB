@@ -1,18 +1,19 @@
-# Confirmar o balancemaneto dos datasets (negativos / positivos)
-from copy import copy, deepcopy
+# TODO Confirmar que os datasets estão balanceados(negativos / positivos)
+
+from copy import copy
 import numpy as np
 
 
-def categorical_to_numeric(dataframe, collumn):
-    categories = dataframe.iloc[:, collumn].unique().tolist()
+def categorical_to_numeric(dataframe, column):
+    categories = dataframe.iloc[:, column].unique().tolist()
     new_df = copy(dataframe)
     cat_dict = {cat: i for i, cat in enumerate(categories)}
-    new_df.iloc[:, collumn] = dataframe.iloc[:, collumn].replace(cat_dict)
+    new_df.iloc[:, column] = dataframe.iloc[:, column].replace(cat_dict)
     cat_dict = {i: cat_dict[i] for i in cat_dict}
     return new_df, cat_dict
 
 
-def vectorize_dataset(dataset, labels=None):
+def vectorized_dataset(dataset, labels=None):
     new_dataset = copy(dataset)
     if not labels:
         labels = {}
@@ -25,7 +26,7 @@ def vectorize_dataset(dataset, labels=None):
     return new_dataset, labels
 
 
-def trainning_test_data_split(dataset, train_split=0.8):
+def training_test_data_split(dataset, train_split=0.8):
     from si.data import Dataset
     n = dataset.X.shape[0]
     m = int(train_split * n)

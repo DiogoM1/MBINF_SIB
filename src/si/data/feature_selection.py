@@ -1,8 +1,7 @@
-import numpy as np
-import scipy.stats
-from scipy import stats
-from copy import copy
 import warnings
+from copy import copy
+
+import numpy as np
 
 from si.data import Dataset
 

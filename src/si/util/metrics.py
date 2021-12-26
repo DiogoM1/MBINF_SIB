@@ -8,8 +8,7 @@ def accuracy(y_true, y_pred):
         print(pred)
         if true == pred:
             correct += 1
-    accuracy = correct / len(y_true)
-    return accuracy
+    return correct / len(y_true)
 
 
 def mse(y_true, y_pred, squared=True):

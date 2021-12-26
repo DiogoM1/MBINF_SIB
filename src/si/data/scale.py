@@ -20,6 +20,10 @@ class StandardScaler:
         The variance of each feature in the training set.
     """
 
+    def __init__(self):
+        self.mean = None
+        self.var = None
+
     def fit(self, dataset):
         """
         Calculate and store the mean and variance of each feature in the

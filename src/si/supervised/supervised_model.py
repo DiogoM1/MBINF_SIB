@@ -15,6 +15,6 @@ class SupervisedModel(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def cost(self):
+    def cost(self, X, y):
         raise NotImplementedError
 

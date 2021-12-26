@@ -17,4 +17,3 @@ class UnsupervisedModel(ABC):
     @abstractmethod
     def fit_transform(self, dataset):
         raise NotImplementedError
-

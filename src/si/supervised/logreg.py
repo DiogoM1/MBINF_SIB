@@ -1,8 +1,7 @@
 import numpy as np
 
 from si.supervised.supervised_model import SupervisedModel
-from si.util.distance import euclidian_distance, sigmoid
-from si.util.metrics import accuracy, mse
+from si.util.distance import sigmoid
 
 
 class LogisticRegression(SupervisedModel):
@@ -12,6 +11,8 @@ class LogisticRegression(SupervisedModel):
         self.theta = None
         self.epochs = epochs
         self.lr = lr
+        self.history = None
+        self.X, self.y = None, None
 
     def fit(self, dataset):
         if not dataset.hasLabel():
@@ -40,12 +41,16 @@ class LogisticRegression(SupervisedModel):
         _x = np.hstack(([1], x))
         return np.round(sigmoid(np.dot(self.theta, _x)))
 
-    def cost(self):
+    def cost(self, X=None, y=None):
         if not self.is_fitted:
             raise Exception("The model hasn't been fitted yet.")
-        y_pred = sigmoid(np.dot(self.theta, self.X.T))
+
+        X = X if X is not None else self.X
+        y = y if y is not None else self.y
+
+        y_pred = sigmoid(np.dot(self.theta, X.T))
         epsilon = 1e-5
-        return (((-self.y).dot(np.log(y_pred + epsilon))) - ((1 - self.y).dot(np.log(1 - y_pred + epsilon)))) / self.y.size
+        return (((-y).dot(np.log(y_pred + epsilon))) - ((1 - y).dot(np.log(1 - y_pred + epsilon)))) / y.size
         # change this
 
 
@@ -69,11 +74,15 @@ class LogisticRegressionReg(LogisticRegression):
             self.history[epoch] = [self.theta[:], self.cost()]
         return self.theta
 
-    def cost(self):
+    def cost(self, X=None, y=None):
         if not self.is_fitted:
             raise Exception("The model hasn't been fitted yet.")
-        y_pred = sigmoid(np.dot(self.theta, self.X.T))
-        m = self.y.size
+
+        X = X if X is not None else self.X
+        y = y if y is not None else self.y
+
+        y_pred = sigmoid(np.dot(self.theta, X.T))
+        m = y.size
         epsilon = 1e-5
         reg = self.lbd / (2 * m) * np.sum(np.square(self.theta))
-        return (((-self.y).dot(np.log(y_pred + epsilon))) - ((1 - self.y).dot(np.log(1 - y_pred + epsilon)))) / m + reg
+        return (((-y).dot(np.log(y_pred + epsilon))) - ((1 - y).dot(np.log(1 - y_pred + epsilon)))) / m + reg

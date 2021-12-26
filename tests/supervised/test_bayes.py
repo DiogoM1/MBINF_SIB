@@ -15,12 +15,12 @@ class TestKNN(unittest.TestCase):
     def setUp(self):
         from si.data import Dataset
         from si.supervised import NaiveBayes
-        from si.util.train import trainning_test_data_split, categorical_to_numeric
+        from si.util.train import training_test_data_split, categorical_to_numeric
         self.filename = "datasets/iris.data"
         data = pd.read_csv(self.filename)
         self.data, self.cat = categorical_to_numeric(data, -1)
         self.dataset = Dataset.from_dataframe(self.data, ylabel="class")
-        self.train_data, self.test_data = trainning_test_data_split(self.dataset)
+        self.train_data, self.test_data = training_test_data_split(self.dataset)
         # set the threshold
         self.knn = NaiveBayes(10)
 

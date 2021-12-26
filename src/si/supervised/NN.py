@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
+
 import numpy as np
+
 from si.supervised.supervised_model import SupervisedModel
-from si.util.metrics import accuracy, mse, mse_prime
+from si.util.metrics import mse, mse_prime
 
 
 class Layer(ABC):
@@ -23,8 +25,8 @@ class Layer(ABC):
 class Dense(Layer):
     def __init__(self, input_size, output_size):
         super().__init__()
-        self.weights = np.random.rand(input_size, output_size) -0.5
-        self.bias = np.random.rand(1, output_size) # pode ser random ou nulos
+        self.weights = np.random.rand(input_size, output_size) - 0.5
+        self.bias = np.random.rand(1, output_size)  # pode ser random ou nulos
 
     def set_weights(self, weights, bias):
         if weights.shape != self.weights.shape:
@@ -44,8 +46,8 @@ class Dense(Layer):
         weight_error = np.dot(self.input.T, output_error)
         bias_error = np.sum(output_error, axis=0)
         # gradient descent is used to update the values
-        self.weights -= learning_rate*weight_error
-        self.bias -= learning_rate*bias_error
+        self.weights -= learning_rate * weight_error
+        self.bias -= learning_rate * bias_error
         return input_error
 
 
@@ -80,6 +82,8 @@ class NN(SupervisedModel):
         self.lr = lr
         self.epochs = epochs
         self.verbose = verbose
+        self.dataset = None
+        self.history = None
 
     def add(self, layer):
         self.layers.append(layer)
@@ -105,7 +109,7 @@ class NN(SupervisedModel):
             err = self.loss(y, output)
             self.history[epoch] = err
             if self.verbose:
-                print(f"epoch {epoch+1}/{self.epochs} error = {err}")
+                print(f"epoch {epoch + 1}/{self.epochs} error = {err}")
 
         if not self.verbose:
             print(f"error={err}")

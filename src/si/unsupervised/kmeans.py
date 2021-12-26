@@ -11,7 +11,7 @@ def random_dist(X, k):
     """
     xmin = X.min(axis=0)
     xmax = X.max(axis=0)
-    centroids = np.array([[np.random.uniform(xmin[i], xmax[i]) for i in range(len(xmax))] for a in
+    centroids = np.array([[np.random.uniform(xmin[i], xmax[i]) for i in range(len(xmax))] for _ in
                           range(k)])
     return centroids
 

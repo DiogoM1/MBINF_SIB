@@ -20,6 +20,11 @@ class Node:
         self.is_terminal = False
 
 
+def gini(probas):
+    """Calculates gini criterion"""
+    return 1 - np.sum(probas ** 2)
+
+
 class DecisionTree(SupervisedModel):
 
     def __init__(self, max_depth=3, min_samples_leaf=1, min_samples_split=2):
@@ -29,11 +34,14 @@ class DecisionTree(SupervisedModel):
         self.min_samples_split = min_samples_split
         # Decision tree itself
         self.Tree = None
+        self.is_fitted = False
+        self.dataset = None
+        self.classes = None
 
     def nodeProbas(self, y):
-        '''
+        """
         Calculates probability of class in a given node
-        '''
+        """
         probas = []
         # for each unique label calculate the probability for it
         for one_class in self.classes:
@@ -41,18 +49,14 @@ class DecisionTree(SupervisedModel):
             probas.append(proba)
         return np.asarray(probas)
 
-    def gini(self, probas):
-        '''Calculates gini criterion'''
-        return 1 - np.sum(probas**2)
-
     def calcImpurity(self, y):
-        '''Wrapper for the impurity calculation. Calculates probas first and then passses them
+        """Wrapper for the impurity calculation. Calculates probas first and then passses them
         to the Gini criterion.
-        '''
-        return self.gini(self.nodeProbas(y))
+        """
+        return gini(self.nodeProbas(y))
 
     def calcBestSplit(self, X, y):
-        '''Calculates the best possible split for the concrete node of the tree'''
+        """Calculates the best possible split for the concrete node of the tree"""
 
         bestSplitCol = None
         bestThresh = None
@@ -80,7 +84,7 @@ class DecisionTree(SupervisedModel):
                 # calculate information gain
                 infoGain = impurityBefore
                 infoGain -= (impurityLeft * y_left.shape[0] / y.shape[0]) + \
-                    (impurityRight * y_right.shape[0] / y.shape[0])
+                            (impurityRight * y_right.shape[0] / y.shape[0])
 
                 # is this infoGain better then all other?
                 if infoGain > bestInfoGain:
@@ -101,9 +105,9 @@ class DecisionTree(SupervisedModel):
         return bestSplitCol, bestThresh, x_left, y_left, x_right, y_right
 
     def buildDT(self, X, y, node):
-        '''
+        """
         Recursively builds decision tree from the top to bottom
-        '''
+        """
         # checking for the terminal conditions
         if node.depth >= self.max_depth:
             node.is_terminal = True
@@ -156,9 +160,9 @@ class DecisionTree(SupervisedModel):
         self.is_fitted = True
 
     def predictSample(self, x, node):
-        '''
+        """
         Passes one object through decision tree and return the probability of it to belong to each class
-        '''
+        """
         assert self.is_fitted, 'Model must be fit before predicting'
         # if we have reached the terminal node of the tree
         if node.is_terminal:

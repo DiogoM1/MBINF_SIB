@@ -29,6 +29,9 @@ class PCA(UnsupervisedModel):
         super().__init__()
         self.k = k
         self._func = function
+        self.scaler = None
+        self.eigen = None
+        self.var_exp = None
 
     def fit(self, dataset):
         self.scaler = StandardScaler()

@@ -1,6 +1,6 @@
 import itertools
 
-# y is reserved to idenfify dependent variables
+# y is reserved to identify dependent variables
 import numpy as np
 import pandas as pd
 
@@ -28,17 +28,17 @@ def label_gen(n):
     return [gen() for _ in range(n)]
 
 
-def summary(dataset, format='df'):
+def summary(dataset, fmt='df'):
     """ Returns the statistics of a dataset(mean, std, max, min)
 
     :param dataset: A Dataset object
     :type dataset: si.data.Dataset
-    :param format: Output format ('df':DataFrame, 'dict':dictionary ), defaults to 'df'
-    :type format: str, optional
+    :param fmt: Output format ('df':DataFrame, 'dict':dictionary ), defaults to 'df'
+    :type fmt: str, optional
     """
-    # Validation step to guarantee that the format the user provided is legal per the current documentation
-    if format not in ["df", "dict"]:
-        raise Exception("Ilegal format provided. Please choose between df and dict.")
+    # Validation step to guarantee that the fmt the user provided is legal per the current documentation
+    if fmt not in ["df", "dict"]:
+        raise Exception("Ilegal fmt provided. Please choose between df and dict.")
 
     # Assign data and calculate the statistics for the flattened array
     if dataset.hasLabel():
@@ -66,16 +66,16 @@ def summary(dataset, format='df'):
         }
         stats_dict[columns[i]] = stats
 
-    # Return the statistics in the user defined format
-    if format == 'dict':
+    # Return the statistics in the user defined fmt
+    if fmt == 'dict':
         return stats_dict
     else:
         # because the dict values are not lists, must pass an index
         # READ MORE:
         # https://www.statology.org/valueerror-if-using-all-scalar-values-you-must-pass-an-index/
-        a = pd.DataFrame.from_dict(stats_dict, orient="index")
         return pd.DataFrame.from_dict(stats_dict, orient="index")
+
 
 # Ver qual foi a correção de custo aplicada.
 def add_intersect(X):
-    return np.hstack((np.ones((X.shape[0],1)), X))
+    return np.hstack((np.ones((X.shape[0], 1)), X))

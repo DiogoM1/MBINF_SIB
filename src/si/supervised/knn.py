@@ -15,14 +15,14 @@ class KNN(SupervisedModel):
     def fit(self, dataset):
         if not dataset.hasLabel():
             raise Exception("Data has no labels.")
-        self.data = dataset
+        self.dataset = dataset
         self.is_fitted = True
-        return self.data
+        return self.dataset
 
     def get_neighbours(self, x):
-#        dist = np.ma.apply_along_axis(self._distance_func, axis=0, arr=self.data.X, y=x)
-#        dist = self._distance_func(self.data.X, x)
-        distances = self._distance_func(self.data.X, x)
+#        dist = np.ma.apply_along_axis(self._distance_func, axis=0, arr=self.dataset.X, y=x)
+#        dist = self._distance_func(self.dataset.X, x)
+        distances = self._distance_func(self.dataset.X, x)
         a = np.argsort(distances)[:self.k]
         return a
 
@@ -31,15 +31,18 @@ class KNN(SupervisedModel):
             raise Exception("The model hasn't been fitted yet.")
         neighbours = self.get_neighbours(x)
         i = neighbours.tolist()
-        meta_data = self.data.y[i].tolist()
+        meta_data = self.dataset.y[i].tolist()
         if self.classification:
             prediction = max(set(meta_data), key=meta_data.count)
         else:
             prediction = sum(meta_data) / len(meta_data)
         return np.array(prediction)
 
-    def cost(self):
+    def cost(self, X=None, y=None):
         if not self.is_fitted:
             raise Exception("The model hasn't been fitted yet.")
-        y_pred = np.ma.apply_along_axis(self.predict, axis=0, arr=self.data.X.T)
-        return accuracy(self.data.y, y_pred)
+        X = X if X is not None else self.dataset.X
+        y = y if y is not None else self.dataset.y
+        
+        y_pred = np.ma.apply_along_axis(self.predict, axis=0, arr=self.dataset.X.T)
+        return accuracy(self.dataset.y, y_pred)
