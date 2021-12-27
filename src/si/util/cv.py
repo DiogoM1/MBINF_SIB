@@ -23,14 +23,14 @@ class CrossValidationScore:
             train, test = training_test_data_split(self.dataset, self.split)
             ds.append((train, test))
             self.model.fit(train)
-            if self.score:
+            if not self.score:
                 train_scores.append(self.model.cost())
                 test_scores.append(self.model.cost(test.X, test.y))
             else:
-                y_train = np.ma.apply_along_axis(self.model.predict(), axis=0, arr=train.X.T)
+                y_train = np.ma.apply_along_axis(self.model.predict, axis=1, arr=train.X)
                 train_scores.append(self.score(train.y, y_train))
-                y_test = np.ma.apply_along_axis(self.model.predict(), axis=0, arr=test.X.T)
-                train_scores.append(self.score(test.y, y_test))
+                y_test = np.ma.apply_along_axis(self.model.predict, axis=1, arr=test.X)
+                test_scores.append(self.score(test.y, y_test))
         self.train_scores = train_scores
         self.test_scores = test_scores
         self.ds = ds
@@ -38,7 +38,7 @@ class CrossValidationScore:
 
     def toDataframe(self):
         assert self.train_scores and self.test_scores, "Need to run trainning before hand"
-        np.array((self.train_scores, self.test_scores))
+        return np.array((self.train_scores, self.test_scores))
 
 
 class GridSearchCV:
@@ -60,3 +60,15 @@ class GridSearchCV:
         self.results = []
         attrs = list(self.parameters.keys())
         values = list(self.parameters.values())
+        from itertools import product
+        for comb in list(product(*values)):
+            for attr, value in zip(attrs, comb):
+                setattr(self.model, attr, value)
+            cv = CrossValidationScore(self.model, self.dataset, self.kwargs)
+            cv.run()
+            self.results.append(cv.run())
+        return self.results
+
+    def toDataframe(self):
+        assert self.results, "Need to run trainning before hand"
+        return np.array([res[0] for res in self.results]), np.array([res[1] for res in self.results])

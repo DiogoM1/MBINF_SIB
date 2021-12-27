@@ -38,5 +38,4 @@ class TestKNN(unittest.TestCase):
         self.assertLessEqual(self.knn_dataset, 1)
         self.assertGreaterEqual(self.knn_dataset, 0.60)
 
-# TODO: Implementar Naive Bayes
 # TODO: Implementar uma função de holdout

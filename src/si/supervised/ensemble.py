@@ -27,7 +27,7 @@ class Ensemble(SupervisedModel):
         self.is_fitted = True
 
     def predict(self, x):
-        votes = [model.preditc(x) for model in self.models]
+        votes = [model.predict(x) for model in self.models]
         consensus = self.f_vote(votes)
         return consensus
 

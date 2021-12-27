@@ -7,10 +7,8 @@ from si.util.train import vectorized_dataset
 
 
 class NaiveBayes(SupervisedModel):
-    def __init__(self, k, classification=True):
+    def __init__(self):
         super().__init__()
-        self.k = k
-        self.classification = classification
         self.labels = None
         self.is_fitted = False
         self.prob_matrix = None

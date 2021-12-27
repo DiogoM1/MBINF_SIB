@@ -10,7 +10,7 @@ class KNN(SupervisedModel):
         super().__init__()
         self.k = k
         self.classification = classification
-        self._distance_func = distance_func
+        self.distance = distance_func
 
     def fit(self, dataset):
         if not dataset.hasLabel():
@@ -22,7 +22,7 @@ class KNN(SupervisedModel):
     def get_neighbours(self, x):
 #        dist = np.ma.apply_along_axis(self._distance_func, axis=0, arr=self.dataset.X, y=x)
 #        dist = self._distance_func(self.dataset.X, x)
-        distances = self._distance_func(self.dataset.X, x)
+        distances = self.distance(self.dataset.X, x)
         a = np.argsort(distances)[:self.k]
         return a
 
@@ -36,7 +36,7 @@ class KNN(SupervisedModel):
             prediction = max(set(meta_data), key=meta_data.count)
         else:
             prediction = sum(meta_data) / len(meta_data)
-        return np.array(prediction)
+        return prediction
 
     def cost(self, X=None, y=None):
         if not self.is_fitted:

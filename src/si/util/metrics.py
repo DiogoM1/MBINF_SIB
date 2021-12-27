@@ -4,8 +4,6 @@ import numpy as np
 def accuracy(y_true, y_pred):
     correct = 0
     for true, pred in zip(y_true, y_pred):
-        print(true)
-        print(pred)
         if true == pred:
             correct += 1
     return correct / len(y_true)
