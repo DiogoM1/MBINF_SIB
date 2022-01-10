@@ -1,7 +1,10 @@
 import numpy as np
 
 from si.supervised.supervised_model import SupervisedModel
-from si.util.activation import sigmoid
+
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
 
 
 class LogisticRegression(SupervisedModel):

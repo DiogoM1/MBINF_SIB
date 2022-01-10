@@ -4,6 +4,7 @@ import numpy as np
 
 from si.supervised.supervised_model import SupervisedModel
 from si.util.im2col import im2col, pad2D, col2im
+from si.util.activation import Sigmoid
 from si.util.metrics import mse, mse_prime
 
 
@@ -53,10 +54,9 @@ class Dense(Layer):
 
 
 class Activation(Layer):
-    def __init__(self, activation, activation_prime=None):
+    def __init__(self, activation):
         super().__init__()
         self.activation = activation
-        self.activation_prime = activation_prime
 
     def forward(self, input_data):
         self.input = input_data
@@ -65,7 +65,7 @@ class Activation(Layer):
 
     def backward(self, output_error, learning_rate):
         # learning rate is not used as there is no parameters to learn
-        return np.multiply(self.activation(self.input), output_error)
+        return np.multiply(self.activation.prime(self.input), output_error)
 
 
 class Conv2D(Layer):
@@ -226,3 +226,5 @@ class NN(SupervisedModel):
 
 # TODO: Get the Activation Functions
 # TODO: Adicionar o Call
+# TODO: Max and Min Pooling
+# TODO: Check Backward propagation
