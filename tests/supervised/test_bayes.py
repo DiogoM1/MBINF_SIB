@@ -2,10 +2,12 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
+
 # noinspection DuplicatedCode
 
 
-class TestKNN(unittest.TestCase):
+class TestNaiveBayes(unittest.TestCase):
     """
     Test Conditions
 
@@ -16,26 +18,28 @@ class TestKNN(unittest.TestCase):
         from si.data import Dataset
         from si.supervised import NaiveBayes
         from si.util.train import training_test_data_split, categorical_to_numeric
-        self.filename = "datasets/iris.data"
+        self.filename = "datasets/breast-bin.data"
         data = pd.read_csv(self.filename)
-        self.data, self.cat = categorical_to_numeric(data, -1)
-        self.dataset = Dataset.from_dataframe(self.data, ylabel="class")
-        self.train_data, self.test_data = training_test_data_split(self.dataset)
+        self.dataset = Dataset.from_data(self.filename, labeled=True)
         # set the threshold
-        self.knn = NaiveBayes(10)
+        self.nb = NaiveBayes()
 
     def test_fit(self):
-        pass
+        self.nb.fit(self.dataset)
 
     def test_predict(self):
-        self.knn.fit(self.train_data)
-        self.knn_dataset = np.ma.apply_along_axis(self.knn.predict, axis=0, arr=self.test_data.X.T)
-        self.assertEqual(self.knn_dataset.shape, (self.test_data.X.shape[0],))
+        self.nb.fit(self.dataset)
+        self.nb_dataset = np.ma.apply_along_axis(self.nb.predict, axis=0, arr=self.dataset.X.T)
+        self.assertEqual(self.nb_dataset.shape, (self.dataset.X.shape[0],))
+
+    def test_predict2(self):
+        self.nb.fit(self.dataset)
+        self.nb.predict(self.dataset.X[0])
 
     def test_cost(self):
-        self.knn.fit(self.dataset)
-        self.knn_dataset = self.knn.cost()
-        self.assertLessEqual(self.knn_dataset, 1)
-        self.assertGreaterEqual(self.knn_dataset, 0.60)
+        self.nb.fit(self.dataset)
+        self.nb_dataset = self.nb.cost(self.dataset.X, self.dataset.y)
+        self.assertLessEqual(self.nb_dataset, 1)
+        self.assertGreaterEqual(self.nb_dataset, 0.60)
 
 # TODO: Implementar uma função de holdout
