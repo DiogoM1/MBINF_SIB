@@ -1,12 +1,12 @@
 import numpy as np
 
 from si.supervised.supervised_model import SupervisedModel
-from si.util.distance import euclidian_distance
+from si.util.distance import euclidean_distance
 from si.util.metrics import accuracy
 
 
 class KNN(SupervisedModel):
-    def __init__(self, k, distance_func=euclidian_distance, classification=True):
+    def __init__(self, k, distance_func=euclidean_distance, classification=True):
         super().__init__()
         self.k = k
         self.classification = classification

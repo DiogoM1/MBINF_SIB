@@ -7,7 +7,6 @@ from si.util.metrics import mse
 class LinearRegression(SupervisedModel):
     def __init__(self, gd=None, epochs=1000, lr=0.001):
         super(LinearRegression, self).__init__()
-        # TODO: check why super (ex: super(KNN, self)) helps in multiple h.
         self.gd = gd
         self.theta = None
         self.epochs = epochs

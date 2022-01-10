@@ -1,7 +1,7 @@
 from copy import copy
 
 import numpy as np
-from si.util.distance import euclidian_distance
+from si.util.distance import euclidean_distance
 from si.unsupervised.unsupervised_model import UnsupervisedModel
 
 
@@ -29,7 +29,7 @@ class KMeans(UnsupervisedModel):
     """
     Init centroids by using a random distribution to generate the coordinates
     """
-    def __init__(self, k, n=1000, distance=euclidian_distance, init_centroids=random_points):
+    def __init__(self, k, n=1000, distance=euclidean_distance, init_centroids=random_points):
         super().__init__()
         self.k = k
         self.n = n

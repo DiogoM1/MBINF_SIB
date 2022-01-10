@@ -16,11 +16,11 @@ class TestGridSearchCV(unittest.TestCase):
         self.filename = 'datasets/breast-bin.data'
         self.dataset = Dataset.from_data(self.filename, labeled=True)
         # set the threshold
-        from si.util.distance import euclidian_distance, manhatan_distance
+        from si.util.distance import euclidean_distance, manhatan_distance
 
         parameters = {
             "k": [2, 3, 4],
-            "distance": [euclidian_distance, manhatan_distance]
+            "distance": [euclidean_distance, manhatan_distance]
         }
 
         knn = KNN(2)

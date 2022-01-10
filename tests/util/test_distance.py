@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from si.util.distance import euclidian_distance, manhatan_distance, hamming_distance
+from si.util.distance import euclidean_distance, manhatan_distance, hamming_distance
 
 
 class TestDistances(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestDistances(unittest.TestCase):
         self.assertTrue(np.array_equal(dis, real_dis))
 
     def test_euclidian_distance(self):
-        dis = euclidian_distance(self.test_array, self.reference)
+        dis = euclidean_distance(self.test_array, self.reference)
         real_dis = np.asarray([1, 3.1622776601683795])
         self.assertTrue(np.array_equal(dis, real_dis))
 

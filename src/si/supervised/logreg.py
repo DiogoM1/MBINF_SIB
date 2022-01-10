@@ -1,10 +1,11 @@
 import numpy as np
 
 from si.supervised.supervised_model import SupervisedModel
-from si.util.distance import sigmoid
+from si.util.activation import sigmoid
 
 
 class LogisticRegression(SupervisedModel):
+    # https://datascience-enthusiast.com/R/logistic_regression.html
 
     def __init__(self, epochs=1000, lr=0.001):
         super(LogisticRegression, self).__init__()
@@ -30,6 +31,7 @@ class LogisticRegression(SupervisedModel):
         for epoch in range(self.epochs):
             z = np.dot(X, self.theta)
             h = sigmoid(z)
+            # grad = 1 / m * np.dot(X.T, (h - y))
             grad = np.dot(X.T, (h - y))
             self.theta -= self.lr * grad
             self.history[epoch] = [self.theta[:], self.cost()]
@@ -69,8 +71,9 @@ class LogisticRegressionReg(LogisticRegression):
             z = np.dot(X, self.theta)
             h = sigmoid(z)
             grad = np.dot(X.T, (h - y))
-            reg = self.lbd/m*self.theta
-            self.theta -= self.lr * (grad - reg)
+            # grad = 1 / m * np.dot(X.T, (h - y))
+            reg = self.lbd / m * np.hstack(([0], self.theta[1:]))
+            self.theta -= self.lr * (grad + reg)
             self.history[epoch] = [self.theta[:], self.cost()]
         return self.theta
 

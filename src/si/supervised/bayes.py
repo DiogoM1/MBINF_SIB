@@ -1,7 +1,7 @@
 import numpy as np
 
 from si.supervised.supervised_model import SupervisedModel
-from si.util.distance import euclidian_distance
+from si.util.distance import euclidean_distance
 from si.util.metrics import accuracy
 from si.util.train import vectorized_dataset
 

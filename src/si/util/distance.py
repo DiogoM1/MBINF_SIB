@@ -10,7 +10,7 @@ def manhatan_distance(X, y):
     return absolute(X - y).sum(axis=1)
 
 
-def euclidian_distance(X, y):
+def euclidean_distance(X, y):
     from numpy import sqrt
     """
     X: (N,N)
@@ -25,7 +25,3 @@ def hamming_distance(X, y):
     Y: (N,)
     """
     return np.size(y) - np.equal(X, y).sum(axis=1)
-
-
-def sigmoid(z):
-    return 1 / (1 + np.exp(-z))
