@@ -65,7 +65,3 @@ class TestLogisticRegressionReg(unittest.TestCase):
         self.log.fit(self.dataset)
         self.log_dataset = self.log.cost()
         self.assertTrue(self.log_dataset)
-
-
-# TODO: Implementar Naive Bayes
-# TODO: Implementar uma função de holdout

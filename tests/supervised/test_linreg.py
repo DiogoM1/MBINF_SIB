@@ -65,7 +65,3 @@ class TestLinearRegressionReg(unittest.TestCase):
         self.lr.fit(self.dataset)
         self.lr_dataset = self.lr.cost()
         self.assertTrue(self.lr_dataset)
-
-
-# TODO: Implementar Naive Bayes
-# TODO: Implementar uma função de holdout

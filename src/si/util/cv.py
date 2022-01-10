@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from si.util.train import training_test_data_split
 
@@ -43,9 +44,10 @@ class CrossValidationScore:
 
 class GridSearchCV:
 
-    def __init__(self, model, dataset, parameters, **kwargs):
+    def __init__(self, model, dataset, parameters, score=None, **kwargs):
         self.model = model
         self.dataset = dataset
+        self.score = score
         hasparam = [hasattr(self.model, param) for param in parameters]
         if np.all(hasparam):
             self.parameters = parameters
@@ -64,11 +66,13 @@ class GridSearchCV:
         for comb in list(product(*values)):
             for attr, value in zip(attrs, comb):
                 setattr(self.model, attr, value)
-            cv = CrossValidationScore(self.model, self.dataset, self.kwargs)
+            cv = CrossValidationScore(self.model, self.dataset, self.score, **self.kwargs)
             cv.run()
             self.results.append(cv.run())
         return self.results
 
     def toDataframe(self):
         assert self.results, "Need to run trainning before hand"
-        return np.array([res[0] for res in self.results]), np.array([res[1] for res in self.results])
+        n_cv = len(self.results[0][0])
+        data = np.hstack((np.array([res[0] for res in self.results]), np.array([res[1] for res in self.results])))
+        return pd.DataFrame(data=data, columns=[f"CV_{i+1} train" for i in range(n_cv)]+[f"CV_{i+1} test" for i in range(n_cv)])

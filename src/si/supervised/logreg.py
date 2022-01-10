@@ -47,7 +47,7 @@ class LogisticRegression(SupervisedModel):
         if not self.is_fitted:
             raise Exception("The model hasn't been fitted yet.")
 
-        X = X if X is not None else self.X
+        X = np.hstack((np.ones((X.shape[0], 1)), X)) if X is not None else self.X
         y = y if y is not None else self.y
 
         y_pred = sigmoid(np.dot(self.theta, X.T))
@@ -80,8 +80,7 @@ class LogisticRegressionReg(LogisticRegression):
     def cost(self, X=None, y=None):
         if not self.is_fitted:
             raise Exception("The model hasn't been fitted yet.")
-
-        X = X if X is not None else self.X
+        X = np.hstack((np.ones((X.shape[0], 1)), X)) if X is not None else self.X
         y = y if y is not None else self.y
 
         y_pred = sigmoid(np.dot(self.theta, X.T))
