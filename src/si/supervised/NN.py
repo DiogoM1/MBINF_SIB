@@ -4,7 +4,6 @@ import numpy as np
 
 from si.supervised.supervised_model import SupervisedModel
 from si.util.im2col import im2col, pad2D, col2im
-from si.util.activation import Sigmoid
 from si.util.metrics import mse, mse_prime
 
 
@@ -116,29 +115,77 @@ class Conv2D(Layer):
 
         self.weights -= learning_rate * d_w
         self.bias -= learning_rate * db
-
         return input_error
 
 
-class AveragePooling(Layer):
-
-    def forward(self, input_data):
-        pass
-
-    def backward(self, output_error, learning_rate):
-        pass
-
-
-class MaxPooling(Layer):
-    def __init__(self):
+class Pooling2D(Layer):
+    def __init__(self, size=2, stride=2):
         super().__init__()
-        self.input_shape = None
+        self.size = size
+        self.stride = stride
+        self.max_idx = None
+        self.X_col = None
+        self.X_shape = None
+
+    def pool(self, x_col):
+        raise NotImplementedError
+
+    def dpool(self, dX_col, dout_cool, cache):
+        raise NotImplementedError
 
     def forward(self, input_data):
-        pass
+        self.X_shape = input_data.shape
+        n, h, w, d = input_data.shape
+        h_out = int((h - self.size) / self.stride + 1)
+        w_out = int((w - self.size) / self.stride + 1)
+
+        if not type(h_out) is int or not type(w_out) is int:
+            raise Exception("Invalid Format")
+
+        # convert X and W into the appropriate 2d matrices and take their product
+        input_data = input_data.reshape(n * d, h, w, 1)
+        self.X_col, _ = im2col(input_data, (self.size, self.size, 1, 1), pad=0, stride=self.stride)
+        out, self.max_idx = self.pool(self.X_col)
+        out = out.reshape((h_out, w_out, n, d))
+        out = out.transpose(2, 0, 1, 3)
+        return out
 
     def backward(self, output_error, learning_rate):
-        pass
+        n, w, h, d = self.X_shape
+        dX_col = np.zeros_like(self.X_col)
+        dout_col = output_error.transpose(1, 2, 0, 3).ravel()
+
+        dX_col = self.dpool(dX_col, dout_col, self.max_idx)
+
+        dX = col2im(dX_col, (n * d, h, w, 1), (self.size, self.size, 1, 1), pad=(0, 0, 0, 0), stride=self.stride)
+        dX = dX.reshape(self.X_shape)
+        return dX
+
+
+#
+# class AveragePooling2D(Pooling2D):
+#
+#     def pool(self, x_col):
+#         out = np.average(x_col, axis=0)
+#         indx = np.argmax(x_col, axis=0)
+#         return out, indx
+#
+#     def dpool(self, dX_col, dout_cool, cache):
+#         pass
+
+
+class MaxPooling2D(Pooling2D):
+
+    def pool(self, x_col):
+        out = np.amax(x_col, axis=0)
+        indx = np.argmax(x_col, axis=0)
+        return out, indx
+
+    def dpool(self, dX_col, dout_cool, cache):
+        # https://medium.com/the-bioinformatics-press/only-numpy-understanding-back-propagation-for-max-pooling-layer-in-multi-layer-cnn-with-example-f7be891ee4b4
+        for x, indx in enumerate(cache):
+            dX_col[indx, x] = 1
+        return dX_col * dout_cool
 
 
 class Flatten(Layer):
@@ -176,6 +223,9 @@ class NN(SupervisedModel):
 
     def add(self, layer):
         self.layers.append(layer)
+
+    def use_loss(self, func, func2):
+        self.loss, self.loss_prime = func, func2
 
     def fit(self, dataset):
         error = 0
@@ -228,3 +278,4 @@ class NN(SupervisedModel):
 # TODO: Adicionar o Call
 # TODO: Max and Min Pooling
 # TODO: Check Backward propagation
+# TODO: RNN
