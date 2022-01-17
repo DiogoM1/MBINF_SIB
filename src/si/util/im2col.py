@@ -72,8 +72,8 @@ def _im2col_indices(X_shape, fr, fc, p, s):
     pr1, pr2, pc1, pc2 = p
     n_ex, n_in, in_rows, in_cols = X_shape
 
-    out_rows = (in_rows + pr1 + pr2 - fr) // s + 1
-    out_cols = (in_cols + pc1 + pc2 - fc) // s + 1
+    out_rows = (in_rows + pr1 + pr2 - fr) % s + 1
+    out_cols = (in_cols + pc1 + pc2 - fc) % s + 1
 
     if any([out_rows <= 0, out_cols <= 0]):
         raise ValueError(

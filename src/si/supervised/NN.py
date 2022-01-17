@@ -143,21 +143,22 @@ class Pooling2D(Layer):
             raise Exception("Invalid Format")
 
         # convert X and W into the appropriate 2d matrices and take their product
+        input_data = input_data.traspose(0,3,1,2)
         input_data = input_data.reshape(n * d, h, w, 1)
-        self.X_col, _ = im2col(input_data, (self.size, self.size, 1, 1), pad=0, stride=self.stride)
+        self.X_col, _ = im2col(input_data, (self.size, self.size, d, d), pad=0, stride=self.stride)
         out, self.max_idx = self.pool(self.X_col)
         out = out.reshape((h_out, w_out, n, d))
         out = out.transpose(2, 0, 1, 3)
         return out
 
     def backward(self, output_error, learning_rate):
+        # https://datascience.stackexchange.com/questions/11699/backprop-through-max-pooling-layers
         n, w, h, d = self.X_shape
         dX_col = np.zeros_like(self.X_col)
-        dout_col = output_error.transpose(1, 2, 0, 3).ravel()
-
-        dX_col = self.dpool(dX_col, dout_col, self.max_idx)
-
-        dX = col2im(dX_col, (n * d, h, w, 1), (self.size, self.size, 1, 1), pad=(0, 0, 0, 0), stride=self.stride)
+        dout_col = output_error.transpose(2, 3, 0, 1).flatten()
+        dX_col  = self.dpool(dX_col, dout_col, self.max_idx)
+        max_val = np.argmax(dX_col, axis=0)
+        dX = col2im(dX_col, (n * d, 1, h, w), (self.size, self.size, d, d), pad=(0, 0, 0, 0), stride=self.stride)
         dX = dX.reshape(self.X_shape)
         return dX
 
@@ -177,15 +178,14 @@ class Pooling2D(Layer):
 class MaxPooling2D(Pooling2D):
 
     def pool(self, x_col):
-        out = np.amax(x_col, axis=0)
         indx = np.argmax(x_col, axis=0)
+        out = x_col[indx, np.arange(x_col.shape[1])]
         return out, indx
 
     def dpool(self, dX_col, dout_cool, cache):
         # https://medium.com/the-bioinformatics-press/only-numpy-understanding-back-propagation-for-max-pooling-layer-in-multi-layer-cnn-with-example-f7be891ee4b4
-        for x, indx in enumerate(cache):
-            dX_col[indx, x] = 1
-        return dX_col * dout_cool
+        dX_col[cache, np.arange(dX_col.shape[1])] = dout_cool
+        return dX_col
 
 
 class Flatten(Layer):
