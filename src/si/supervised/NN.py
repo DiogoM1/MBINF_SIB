@@ -67,6 +67,80 @@ class Activation(Layer):
         return np.multiply(self.activation.prime(self.input), output_error)
 
 
+class RNN(Layer):
+    """One to many RNN"""
+    def __init__(self, input_dim, output_dim, hidden_dim=64, lr=0.002):
+        self.U = np.randn(hidden_dim, input_dim) / 1000
+        self.W = np.randn(hidden_dim, hidden_dim) / 1000
+        self.V = np.randn(output_dim, hidden_dim) / 1000
+
+        # Biases
+        self.bh = np.zeros((hidden_dim, 1))
+        self.by = np.zeros((output_dim, 1))
+
+    def forward(self, input_data):
+        h = np.zeros((self.W.shape[0], 1))
+
+        self.last_inputs = input_data
+        self.last_hs = {0: h}
+
+        # Perform each step of the RNN
+        for i, x in enumerate(input_data):
+            h = np.tanh(self.U @ x + self.W @ h + self.bh)
+            self.last_hs[i + 1] = h
+
+        # Compute the output
+        y = self.V @ h + self.by
+
+        return y
+
+    def backward(self, output_error, learning_rate):
+        # https://stackoverflow.com/questions/41555576/lstm-rnn-backpropagation
+        n = len(self.last_inputs)
+
+        # Calculate dL/dWhy and dL/dby.
+        d_V = output_error @ self.last_hs[n].T
+        d_by = output_error
+
+        # init derivates
+        d_W = np.zeros(self.W.shape)
+        d_U = np.zeros(self.U.shape)
+        d_bh = np.zeros(self.bh.shape)
+
+        # dL/dh for the last h.
+        # dL/dh = dL/dy * dy/dh
+        d_h = self.V.T @ output_error
+
+        # Backpropagate through time.
+        for t in reversed(range(n)):
+            # An intermediate value: dL/dh * (1 - h^2)
+            temp = ((1 - self.last_hs[t + 1] ** 2) * d_h)
+
+            # dL/db = dL/dh * (1 - h^2)
+            d_bh += temp
+
+            # dL/dWhh = dL/dh * (1 - h^2) * h_{t-1}
+            d_W += temp @ self.last_hs[t].T
+
+            # dL/dWxh = dL/dh * (1 - h^2) * x
+            d_U += temp @ self.last_inputs[t].T
+
+            # Next dL/dh = dL/dh * (1 - h^2) * Whh
+            d_h = self.W @ temp
+
+        # Clip to prevent exploding gradients.
+        # https://www.geeksforgeeks.org/ml-back-propagation-through-time/
+        for d in [d_U, d_W, d_V, d_bh, d_by]:
+            np.clip(d, -1, 1, out=d)
+
+        # Update weights and biases using gradient descent.
+        self.W -= learning_rate * d_W
+        self.U -= learning_rate * d_U
+        self.V -= learning_rate * d_V
+        self.bh -= learning_rate * d_bh
+        self.by -= learning_rate * d_by
+        return d_h
+
 class Conv2D(Layer):
     def __init__(self, input_shape, kernel_shape, layer_depth, stride=1, padding=0):
         super().__init__()
@@ -143,6 +217,7 @@ class Pooling2D(Layer):
             raise Exception("Invalid Format")
 
         # convert X and W into the appropriate 2d matrices and take their product
+        # TODO:adicionar capacidade para multi canais
         input_data = input_data.reshape(n * d, h, w, 1)
         self.X_col, _ = im2col(input_data, (self.size, self.size, 1, 1), pad=0, stride=self.stride)
         out, self.max_idx = self.pool(self.X_col)
@@ -274,8 +349,7 @@ class NN(SupervisedModel):
         y_pred = self.predict(X)
         return self.loss(y, y_pred)
 
-# TODO: Get the Activation Functions
-# TODO: Adicionar o Call
 # TODO: Max and Min Pooling
 # TODO: Check Backward propagation
 # TODO: RNN
+# COF Matrix
