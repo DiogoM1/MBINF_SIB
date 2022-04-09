@@ -108,3 +108,60 @@ def minibatch(X, batchsize=256, shuffle=True):
             yield ix[i * batchsize: (i + 1) * batchsize]
 
     return mb_generator(),
+
+
+def confusion_matrix(y_true, y_predicted):
+    # check if both arrays have the same dimensions
+    if y_true.shape[0] != y_true.shape[0]:
+        raise Exception(
+            f"The provided truth value and predicted arrays have different dimensions: ({y_true.shape}) != ({y_predicted.shape})")
+    from itertools import product
+    cof_comb = product(np.unique(y_true), np.unique(y_predicted))
+    cof = np.array(list(cof_comb))
+    # add initial count
+    cof = np.hstack([cof, np.zeros(len(cof), dtype=int).reshape(-1, 1)])
+    data = np.hstack(
+        [y_true.reshape(-1, 1), y_predicted.reshape(-1, 1), np.ones(len(y_predicted), dtype=int).reshape(-1, 1)])
+    return pd.DataFrame(np.vstack([cof, data])).pivot_table(index=0, columns=1, values=2, aggfunc=sum)
+
+
+def plot_confusion_matrix(y_true, y_predicted, labels=None, **kwargs):
+    from matplotlib import pyplot as plt
+    cof = confusion_matrix(y_true, y_predicted)
+
+    fig, ax = plt.subplots()
+    im = ax.imshow(cof, **kwargs)
+
+    # Show all ticks and label them with the respective list entries
+    ax.tick_params(top=True, bottom=False,
+                   labeltop=True, labelbottom=False)
+    if not labels:
+        ax.set_xticks(np.arange(len(cof.index)), labels=cof.index)
+        ax.set_yticks(np.arange(len(cof.columns)), labels=cof.columns)
+    else:
+        ax.set_xticks(np.arange(len(cof.index)), labels=[labels[i] for i in cof.index])
+        ax.set_yticks(np.arange(len(cof.columns)), labels=[labels[i] for i in cof.columns])
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
+             rotation_mode="anchor")
+
+    # Loop over data dimensions and create text annotations.
+    for i in range(len(cof.columns)):
+        for j in range(len(cof.index)):
+            text = ax.text(j, i, cof.iloc[i, j],
+                           ha="center", va="center", color="w")
+
+    ax.set_title("Confusion matrix")
+    ax.set_xlabel('Predicted Values')
+    ax.set_ylabel('True Values')
+    fig.tight_layout()
+    plt.show()
+
+
+if __name__ == "__main__":
+    a = np.array([0, 1, 2, 3, 4])
+    b = np.array([0, 1, 2, 3, 4])
+    c = confusion_matrix(a, b)
+    plot_confusion_matrix(a, b)
+    plot_confusion_matrix(a, b, {0: "things", 1: "other_things", 2: "many_things", 3: "party_things", 4: "too_many_things"})

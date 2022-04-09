@@ -1,0 +1,58 @@
+good,1
+bad,0
+happy,1
+sad,0
+not good,0
+not bad,1
+not happy,0
+not sad,1
+very good,1
+very bad,0
+very happy,1
+very sad,0
+i am happy,1
+this is good,1
+i am bad,0
+this is bad,0
+i am sad,0
+this is sad,0
+i am not happy,0
+this is not good,0
+i am not bad,1
+this is not sad,1
+i am very happy,1
+this is very good,1
+i am very bad,0
+this is very sad,0
+this is very happy,1
+i am good not bad,1
+this is good not bad,1
+i am bad not good,0
+i am good and happy,1
+this is not good and not happy,0
+i am not at all good,0
+i am not at all bad,1
+i am not at all happy,0
+this is not at all sad,1
+this is not at all happy,0
+i am good right now,1
+i am bad right now,0
+this is bad right now,0
+i am sad right now,0
+i was good earlier,1
+i was happy earlier,1
+i was bad earlier,0
+i was sad earlier,0
+i am very bad right now,0
+this is very good right now,1
+this is very sad right now,0
+this was bad earlier,0
+this was very good earlier,1
+this was very bad earlier,0
+this was very happy earlier,1
+this was very sad earlier,0
+i was good and not bad earlier,1
+i was not good and not happy earlier,0
+i am not at all bad or sad right now,1
+i am not at all good or happy right now,0
+this was not happy and not good earlier,0

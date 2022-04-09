@@ -1,11 +1,17 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+from matplotlib import pyplot
 
 from si.supervised.supervised_model import SupervisedModel
 from si.util.im2col import im2col, pad2D, col2im
 from si.util.metrics import mse, mse_prime
 
+def plot_img(img,shape=(28,28)):
+    pic = (img*255).reshape(shape)
+    pic = pic.astype('int')
+    pyplot.imshow(pic, cmap=pyplot.get_cmap('gray'))
+    pyplot.show()
 
 class Layer(ABC):
     def __init__(self):
@@ -69,10 +75,10 @@ class Activation(Layer):
 
 class RNN(Layer):
     """One to many RNN"""
-    def __init__(self, input_dim, output_dim, hidden_dim=64, lr=0.002):
-        self.U = np.randn(hidden_dim, input_dim) / 1000
-        self.W = np.randn(hidden_dim, hidden_dim) / 1000
-        self.V = np.randn(output_dim, hidden_dim) / 1000
+    def __init__(self, input_dim, output_dim, hidden_dim=64):
+        self.U = np.random.randn(hidden_dim, input_dim) / 1000
+        self.W = np.random.randn(hidden_dim, hidden_dim) / 1000
+        self.V = np.random.randn(output_dim, hidden_dim) / 1000
 
         # Biases
         self.bh = np.zeros((hidden_dim, 1))
@@ -86,7 +92,7 @@ class RNN(Layer):
 
         # Perform each step of the RNN
         for i, x in enumerate(input_data):
-            h = np.tanh(self.U @ x + self.W @ h + self.bh)
+            h = np.tanh(self.U.dot(x.T) + self.W.dot(h) + self.bh)
             self.last_hs[i + 1] = h
 
         # Compute the output
@@ -210,25 +216,38 @@ class Pooling2D(Layer):
     def forward(self, input_data):
         self.X_shape = input_data.shape
         n, h, w, d = input_data.shape
-        h_out = int((h - self.size) / self.stride + 1)
-        w_out = int((w - self.size) / self.stride + 1)
+        self.h_out = int((h - self.size) / self.stride + 1)
+        self.w_out = int((w - self.size) / self.stride + 1)
 
-        if not type(h_out) is int or not type(w_out) is int:
+        if not type(self.h_out) is int or not type(self.w_out) is int:
             raise Exception("Invalid Format")
 
         # convert X and W into the appropriate 2d matrices and take their product
         # TODO:adicionar capacidade para multi canais
+        input_data = input_data.transpose(0, 3, 1, 2)
         input_data = input_data.reshape(n * d, h, w, 1)
         self.X_col, _ = im2col(input_data, (self.size, self.size, 1, 1), pad=0, stride=self.stride)
         out, self.max_idx = self.pool(self.X_col)
-        out = out.reshape((h_out, w_out, n, d))
-        out = out.transpose(2, 0, 1, 3)
+        # out = out.reshape((h_out, w_out, n, d))
+        # out = out.transpose(2, 0, 1, 3)
+
+        primer_recomposed23 = out.reshape((self.w_out * self.h_out), -1)
+        primer_recomposed23 = primer_recomposed23.T
+        primer_recomposed23 = primer_recomposed23.reshape(n * d,  self.w_out, self.h_out, -1)
+        primer_recomposed23 = primer_recomposed23.transpose(0, 3, 1, 2)
+        primer_recomposed23 = primer_recomposed23.reshape(n, d,  self.w_out, self.h_out)
+        out = primer_recomposed23.transpose(0, 2, 3, 1)
         return out
 
     def backward(self, output_error, learning_rate):
         n, w, h, d = self.X_shape
         dX_col = np.zeros_like(self.X_col)
-        dout_col = output_error.transpose(1, 2, 0, 3).ravel()
+        # dout_col = output_error.transpose(1, 2, 0, 3).ravel()
+
+        primer_recomposed32 = output_error.transpose(0, 3, 2, 1)
+        primer_recomposed32 = primer_recomposed32.reshape(n * d, self.w_out, self.h_out)
+        primer_recomposed32 = primer_recomposed32.T
+        dout_col = primer_recomposed32.ravel()
 
         dX_col = self.dpool(dX_col, dout_col, self.max_idx)
 
@@ -260,7 +279,8 @@ class MaxPooling2D(Pooling2D):
         # https://medium.com/the-bioinformatics-press/only-numpy-understanding-back-propagation-for-max-pooling-layer-in-multi-layer-cnn-with-example-f7be891ee4b4
         for x, indx in enumerate(cache):
             dX_col[indx, x] = 1
-        return dX_col * dout_cool
+        a = dX_col * dout_cool
+        return a
 
 
 class Flatten(Layer):
@@ -315,7 +335,7 @@ class NN(SupervisedModel):
                 output = layer.forward(output)
 
             # backward propagation
-            error = self.loss_prime(y, output)
+            error = self.loss_prime(y, np.round(output))
             for layer in reversed(self.layers):
                 error = layer.backward(error, self.lr)
 

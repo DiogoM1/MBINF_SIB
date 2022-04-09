@@ -17,6 +17,7 @@ class LogisticRegression(SupervisedModel):
         self.lr = lr
         self.history = None
         self.X, self.y = None, None
+        self.is_fitted = False
 
     def fit(self, dataset):
         if not dataset.hasLabel():
